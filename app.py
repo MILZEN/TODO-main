@@ -69,7 +69,7 @@ app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/todo
 mongo = PyMongo(app)
 
 # Verificar la conexión a MongoDB
-@app.before_first_request
+@app._got_first_request
 def verify_mongo_connection():
     try:
         mongo.db.command('ping')  # Comando para hacer ping a la base de datos
