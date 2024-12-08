@@ -271,18 +271,27 @@ def auth_callback():
 
 @app.route('/home/<username>')
 def home(username):
-    if 'username' in session:
-        username = session['username']
-    
-    tasks = mongo.db.tasks.find({"username": username})
-    
+    if 'username' not in session:
+        flash('You need to be logged in to access your tasks', 'danger')
+        return redirect(url_for('login'))  # Redirige a la página de login si no hay sesión
+
+    username = session['username']  # Asegúrate de que el username provenga de la sesión
+
+    tasks = mongo.db.tasks.find({"username": username})  # Filtrar las tareas por el username de la sesión
+
     # Obtener los eventos del calendario de Google
     calendar_events = get_google_calendar_events()
-    
+
     return render_template('home.html', tasks=tasks, username=username, calendar_events=calendar_events)
 
 @app.route('/add/<username>', methods=['POST'])
 def add_task(username):
+    if 'username' not in session:  # Verificar si el usuario está autenticado
+        flash('You need to be logged in to add tasks', 'danger')
+        return redirect(url_for('login'))
+
+    username = session['username']  # Obtener el username de la sesión
+
     title = request.form.get('title')
     priority = request.form.get('priority')
 
@@ -290,21 +299,31 @@ def add_task(username):
         mongo.db.tasks.insert_one({
             'title': title,
             'priority': priority,
-            'username': username,
+            'username': username,  # Asociar la tarea al usuario
             'completed': False
         })
 
-    tasks = mongo.db.tasks.find({"username": username})
+    tasks = mongo.db.tasks.find({"username": username})  # Filtrar tareas por el username del usuario
     return render_template('home.html', tasks=tasks, username=username)
 
 @app.route('/edit/<id>', methods=['GET', 'POST'])
 def edit_task(id):
-    task = mongo.db.tasks.find_one({"_id": ObjectId(id)})
+    if 'username' not in session:  # Verificar si el usuario está autenticado
+        flash('You need to be logged in to edit tasks', 'danger')
+        return redirect(url_for('login'))
+
+    task = mongo.db.tasks.find_one({"_id": ObjectId(id), "username": session['username']})  # Filtrar por username
+
+    if not task:
+        flash('Task not found or you do not have permission to edit it', 'danger')
+        return redirect(url_for('home', username=session['username']))
+
     if request.method == 'POST':
         new_title = request.form.get('title')
         new_priority = request.form.get('priority')
         mongo.db.tasks.update_one({'_id': ObjectId(id)}, {'$set': {'title': new_title, 'priority': new_priority}})
-        return redirect(url_for('home', username=task['username']))
+        return redirect(url_for('home', username=session['username']))
+
     return render_template('edit.html', task=task)
 
 @app.route('/update-completion/<id>', methods=['POST'])
