@@ -18,6 +18,7 @@ import os
 import secrets
 import psycopg2
 from psycopg2 import Error
+import logging
 
 # Cargar variables de entorno
 load_dotenv()
@@ -42,6 +43,7 @@ else:
 # Inicialización de Flask y OAuth
 app = Flask(__name__)
 app.secret_key = 'tas^kedpas!sword?'  # Necesario para flash messages
+app.logger.setLevel(logging.DEBUG)
 
 app.logger.debug(f"GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
 app.logger.debug(f"GOOGLE_CLIENT_SECRET: {os.getenv('GOOGLE_CLIENT_SECRET')}")
@@ -56,6 +58,7 @@ google = oauth.register(
     name='google',
     client_id=GOOGLE_CLIENT_ID,
     client_secret=GOOGLE_CLIENT_SECRET,
+    server_metadata_url=GOOGLE_DISCOVERY_URL,  # Endpoint de descubrimiento
     client_kwargs={
         'scope': 'openid profile email'  # Permisos para acceder al perfil y email del usuario
     }
