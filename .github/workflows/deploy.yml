@@ -23,6 +23,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt  # Asegúrate de tener un requirements.txt en tu repo
 
+      - name: Verify dependencies
+        run: |
+          pip list  # Verifica que las dependencias se han instalado correctamente
+
+      - name: Debug Deploy API Request
+        run: |
+          echo "RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}"
+          echo "RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}"
+
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
