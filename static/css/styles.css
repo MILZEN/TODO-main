@@ -1,0 +1,94 @@
+/* Estilos generales */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #6CA2AC; /* Fondo principal */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+/* Header y Navbar */
+header {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    background-color: #507D80;
+    padding: 10px 0;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10; /* Asegura que el header esté por encima del contenido */
+}
+
+.navbar {
+    overflow: hidden;
+    height: 50px;
+    padding: 10px;
+    background-color: #507D80;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.navbar img {
+    width: 55px;
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar button {
+    background-color: #6CA2AC;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    height: 100%;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+
+.navbar button:hover {
+    opacity: 0.8;
+}
+
+/* Contenedor principal */
+.container {
+    margin-top: 150px; /* Ajustado para centrar el contenedor respecto al header */
+    width: 60%;
+    padding: 30px; /* Aumentado el padding para mostrar más borde de fondo */
+    background-color: #ffffff; /* Fondo blanco */
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.title {
+    font-size: 7rem;
+    color: #507D80;
+    margin-bottom: 10px;
+}
+
+.slogan {
+    font-size: 3rem;
+    color: #333;
+}

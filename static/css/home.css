@@ -1,0 +1,230 @@
+/* General styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #6CA2AC; /* Color de fondo */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #ffffff;
+    overflow: hidden; /* Evita el scroll de la página */
+}
+
+.container {
+    width: 50%;
+    height: 90vh; /* Ajustamos la altura para que no ocupe todo el viewport */
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: #507D80; /* Color más oscuro que el fondo */
+    padding: 20px;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+    position: relative;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: white;
+}
+
+header img {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+form {
+    margin-top: 20px;
+    flex-shrink: 0; /* Evita que el formulario se reduzca al hacer scroll */
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 70%;
+    margin-bottom: 7px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    margin-right: 10px;
+}
+
+/* Estilos para el selector de prioridad */
+select {
+    padding: 10px;
+    width: 30%;
+    border: 1px solid #6CA2AC;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    font-size: 1rem;
+    color: #333;
+}
+
+select option {
+    padding: 10px;
+}
+
+select:focus {
+    border-color: #FFB13D;
+    box-shadow: 0 0 5px rgba(255, 177, 61, 0.5);
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #405960;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 5px;
+}
+
+/* Task list styles */
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px;
+    flex-grow: 1; /* El listado ocupará todo el espacio restante */
+    overflow-y: auto; /* Habilita el scroll en la lista de tareas */
+    border-top: 1px solid #ccc; /* Separador visual */
+}
+
+li {
+    background-color: white;
+    color: #333;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 2px solid #6CA2AC;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, border 0.3s;
+    position: relative;
+}
+
+.task-item {
+    position: relative;
+}
+
+.task-item .priority-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 8px;
+    transition: all 0.5s ease-in-out;
+}
+
+.task-item.priority-low .priority-bar {
+    background-color: #82AC6C; /* Verde suave */
+}
+
+.task-item.priority-medium .priority-bar {
+    background-color: #FFB13D; /* Naranja */
+}
+
+.task-item.priority-high .priority-bar {
+    background-color: #E94D4A; /* Rojo */
+}
+
+.task-item.completed .priority-bar {
+    background-color: #3E4F50; /* Color más oscuro */
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.task-item.completed {
+    background-color: #000a1a; /* Azul más oscuro y potente */
+    border: 2px solid #FFD700; /* Amarillo oro puro */
+    box-shadow: 0 0 0 4px transparent; /* Eliminar efecto de brillo expandido */
+    color: white; /* Cambiar el color de texto a blanco */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Transiciones suaves */
+
+    /* Apagar botones excepto eliminar */
+    pointer-events: none; /* Deshabilitar interacción en todos los elementos hijos */
+    opacity: 0.6; /* Reducir opacidad de los elementos secundarios */
+}
+
+.task-item.completed .delete-btn {
+    pointer-events: auto; /* Permitir interacción en el botón de eliminar */
+    opacity: 1; /* Mantener visibilidad completa del botón de eliminar */
+}
+
+
+.task-text {
+    flex-grow: 1;
+    text-align: left;
+}
+
+/* Button styles */
+.check-btn {
+    background-color: #FFB13D; /* Amarillo */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.check-btn:disabled {
+    background-color: #cccccc; /* Deshabilitado */
+    cursor: not-allowed;
+}
+
+.edit-btn {
+    background-color: #82AC6C; /* Botón edit */
+}
+
+.delete-btn {
+    background-color: #E94D4A; /* Botón delete */
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:focus {
+    outline: none;
+}
+
+/* Scrollbar styles */
+ul::-webkit-scrollbar {
+    width: 10px;
+}
+
+ul::-webkit-scrollbar-thumb {
+    background-color: #cccccc;
+    border-radius: 10px;
+}
+
+ul::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}

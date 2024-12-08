@@ -1,0 +1,130 @@
+/* Estilos generales */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #6CA2AC; /* Fondo principal */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #ffffff;
+}
+
+/* Barra de navegación */
+.navbar {
+    height: 50px;
+    padding: 10px;
+    background-color: #507D80;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.navbar img {
+    overflow: hidden;
+    width: 55px;
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar button {
+    background-color: #6CA2AC;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    height: 100%;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+
+.navbar button:hover {
+    opacity: 0.8;
+}
+
+/* Contenedor principal */
+.container {
+    margin-top: 80px; /* Ajustado para encabezado fijo */
+    width: 60%;
+    padding: 20px;
+    background-color: #ffffff; /* Fondo grisáceo */
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Título y eslogan */
+h2 {
+    color: #507D80;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.error {
+    font-size: 18px;
+    font-style: italic;
+    color: red;
+    list-style: none;
+    text-align:start;
+    align-items: center;
+}
+
+/* Estilos para los campos del formulario */
+input[type="text"], input[type="email"], input[type="password"] {
+    width: calc(100% - 22px); /* Ajusta el ancho para el padding */
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #507D80;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+input:focus {
+    outline: none;
+    border-color: #FFB13D;
+}
+
+/* Estilo para los botones del formulario */
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #0e383b;
+    color: white;
+    cursor: pointer;
+    margin: 10px 0;
+    font-size: 1.2rem;
+    transition: all 0.3s ease-in-out; /* Aplicamos la transición a todas las propiedades */
+}
+
+button:hover {
+    background: linear-gradient(to bottom, #145256, #0e383b);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Sombra para simular el brillo */
+    transform: scale(1.02); /* Aumentamos ligeramente el tamaño */
+    opacity: 0.9; /* Reducimos ligeramente la opacidad */
+}
+
+button.submit-btn {
+    background-color: #6CA2AC;
+}
+
+button.submit-btn:hover {
+    background-color: #507D80;
+}

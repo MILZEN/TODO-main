@@ -1,0 +1,124 @@
+/* General styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #6CA2AC; /* Color de fondo */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #ffffff;
+    overflow: hidden; /* Evita el scroll de la página */
+}
+
+.container {
+    width: 50%;
+    height: auto; /* Ajustamos la altura para que no ocupe todo el viewport */
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: #507D80; /* Color más oscuro que el fondo */
+    padding: 20px;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+    position: relative;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: white;
+}
+
+header img {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+form {
+    margin-top: 20px;
+    flex-shrink: 0; /* Evita que el formulario se reduzca al hacer scroll */
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 70%;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    margin-right: 10px;
+}
+
+/* Estilos para el selector de prioridad */
+select {
+    padding: 10px;
+    width: 30%; /* Ajusta el ancho según necesites */
+    border: 1px solid #6CA2AC; /* Color de borde acorde al diseño */
+    border-radius: 8px; /* Bordes redondeados */
+    background-color: #f9f9f9; /* Fondo claro */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    outline: none; /* Elimina el borde por defecto al hacer focus */
+    font-size: 1rem; /* Tamaño de fuente acorde */
+    color: #333; /* Color del texto */
+}
+
+/* Estilos para las opciones del selector */
+select option {
+    border: 2px solid transparent;
+    padding: 10px;
+}
+
+select option:hover {
+    border: 2px solid #6CA2AC; /* Color del borde */
+    background-color: transparent; /* Evitar que el fondo cambie */
+}
+
+/* Estilo de enfoque para el selector */
+select:focus {
+    border-color: #FFB13D; /* Color de borde al hacer focus */
+    box-shadow: 0 0 5px rgba(255, 177, 61, 0.5); /* Sombra sutil al hacer focus */
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 5px;
+}
+
+.task-text {
+    flex-grow: 1;
+    text-align: left;
+}
+
+/* Button styles */
+.edit-btn {
+    background-color: #82AC6C; /* Botón edit */
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:focus {
+    outline: none;
+}

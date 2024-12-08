@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasked</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/icon.ico') }}">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+            <div class="nav-buttons">
+                <a href="{{ url_for('login') }}"><button class="edit-btn">Login</button></a>
+                <a href="{{ url_for('register') }}"><button class="edit-btn">Sign in</button></a>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <h1 class="title">Tasked</h1>
+        <p class="slogan">Simplify your tasks, elevate your productivity.</p>
+    </div>
+</body>
+</html>
