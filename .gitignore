@@ -23,3 +23,7 @@ Thumbs.db
 *.tmp
 variables.env
 secret.key
+
+git rm --cached .env
+git rm --cached secret.key
+git commit -m "Remove sensitive files from Git history"
