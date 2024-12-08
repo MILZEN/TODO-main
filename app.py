@@ -55,7 +55,7 @@ google = oauth.register(
     name='google',
     client_id=GOOGLE_CLIENT_ID,
     client_secret=GOOGLE_CLIENT_SECRET,
-    server_metadata_url=GOOGLE_DISCOVERY_URL,  # Asegúrate de que esta URL esté configurada correctamente
+    server_metadata_url=GOOGLE_DISCOVERY_URL,
     client_kwargs={
         'scope': 'openid profile email'  # Permisos para acceder al perfil y email del usuario
     }
@@ -69,13 +69,19 @@ mongo = PyMongo(app)
 def create_connection():
     connection = None
     try:
-        connection = psycopg2.connect(
-            host=MYSQL_HOST,
-            user=MYSQL_USER,
-            password=MYSQL_PASSWORD,
-            database=MYSQL_DATABASE,
-            sslmode='require'  # Usamos SSL para conexiones seguras en Render
-        )
+        # Usar DATABASE_URL para PostgreSQL en producción
+        database_url = os.getenv('DATABASE_URL')
+        if database_url:
+            connection = psycopg2.connect(database_url, sslmode='require')
+        else:
+            # Si no se encuentra DATABASE_URL, intenta con las variables de entorno locales
+            connection = psycopg2.connect(
+                host=MYSQL_HOST,
+                user=MYSQL_USER,
+                password=MYSQL_PASSWORD,
+                database=MYSQL_DATABASE,
+                sslmode='require'  # Usamos SSL para conexiones seguras en Render
+            )
     except Error as e:
         print(f"Error al conectar a la base de datos: {e}")
     
