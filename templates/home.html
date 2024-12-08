@@ -46,6 +46,26 @@
         
     </div>
     
+    <div>
+        <!-- Widget del Calendario -->
+<div class="calendar-widget">
+    <h3>Próximos eventos</h3>
+    {% if events %}
+        <ul>
+            {% for event in events %}
+                <li>
+                    <strong>{{ event.summary }}</strong><br>
+                    Fecha: {{ event.start.dateTime or event.start.date }}<br>
+                    Descripción: {{ event.description or 'No hay descripción' }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tienes eventos próximos.</p>
+    {% endif %}
+</div>
+    </div>
+
     <script>
         function markCompleted(button, taskId) {
             // Deshabilitar el botón inmediatamente para evitar múltiples clics

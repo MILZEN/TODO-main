@@ -19,6 +19,8 @@ import secrets
 import psycopg2
 from psycopg2 import Error
 import logging
+from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
 
 # Cargar variables de entorno
 load_dotenv()
@@ -42,7 +44,7 @@ else:
 
 # Inicialización de Flask y OAuth
 app = Flask(__name__)
-app.secret_key = 'tas^kedpas!sword?'  # Necesario para flash messages
+app.secret_key = os.getenv('FLASK_SECRET_KEY')
 app.logger.setLevel(logging.DEBUG)
 
 app.logger.debug(f"GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
@@ -52,6 +54,7 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = os.getenv('GOOGLE_DISCOVERY_URL')
 PEOPLE_API_SCOPE = os.getenv('PEOPLE_API_SCOPE')
+GOOGLE_CALENDAR_SCOPE = 'https://www.googleapis.com/auth/calendar.readonly'
 
 oauth = OAuth(app)
 google = oauth.register(
@@ -60,7 +63,7 @@ google = oauth.register(
     client_secret=GOOGLE_CLIENT_SECRET,
     server_metadata_url=GOOGLE_DISCOVERY_URL,  # Endpoint de descubrimiento
     client_kwargs={
-        'scope': 'openid profile email'  # Permisos para acceder al perfil y email del usuario
+        'scope': 'openid profile email ' + GOOGLE_CALENDAR_SCOPE  # Combinando scope de OAuth y Calendar
     }
 )
 
@@ -196,6 +199,32 @@ def auth_callback():
         
         print("Perfil de usuario:", user)  # Depuración: Imprimir el perfil del usuario
 
+        # Obtener el acceso al calendar utilizando el token
+        credentials = google.oauth2.credentials.Credentials(
+            token['access_token'],
+            refresh_token=token.get('refresh_token'),
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id=GOOGLE_CLIENT_ID,
+            client_secret=GOOGLE_CLIENT_SECRET
+        )
+
+        # Usar la API de Google Calendar para obtener eventos
+        service = build('calendar', 'v3', credentials=credentials)
+
+        # Llamada a la API para obtener los próximos 10 eventos
+        events_result = service.events().list(
+            calendarId='primary', timeMin='2024-12-08T00:00:00Z', maxResults=10, singleEvents=True, orderBy='startTime'
+        ).execute()
+
+        events = events_result.get('items', [])
+
+        if not events:
+            flash('No upcoming events found.', 'info')
+        else:
+            flash('Events fetched successfully.', 'success')
+            for event in events:
+                print(f"Event: {event['summary']} - Start: {event['start']['dateTime']}")
+
     except Exception as e:
         flash(f"Error al obtener el perfil del usuario: {e}", "danger")
         return redirect(url_for('login'))
@@ -236,8 +265,24 @@ def home(username):
     # Obtener el username de la sesión si no se pasa en la URL
     if 'username' in session:
         username = session['username']
+    
+    # Obtener las tareas de la base de datos MongoDB
     tasks = mongo.db.tasks.find({"username": username})
-    return render_template('home.html', tasks=tasks, username=username)
+
+    # Verificar si hay un token de Google en la sesión
+    google_token = session.get('google_token')
+    if google_token:
+        # Usar el token para crear un servicio de Google Calendar
+        credentials = google.oauth2.credentials.Credentials(google_token['access_token'])
+        calendar_service = build('calendar', 'v3', credentials=credentials)
+
+        # Obtener los próximos 5 eventos del calendario
+        events_result = calendar_service.events().list(calendarId='primary', maxResults=5, singleEvents=True, orderBy='startTime').execute()
+        events = events_result.get('items', [])
+    else:
+        events = []
+
+    return render_template('home.html', tasks=tasks, username=username, events=events)
 
 @app.route('/add/<username>', methods=['POST'])
 def add_task(username):
