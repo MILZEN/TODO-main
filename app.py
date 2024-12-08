@@ -55,7 +55,6 @@ google = oauth.register(
     name='google',
     client_id=GOOGLE_CLIENT_ID,
     client_secret=GOOGLE_CLIENT_SECRET,
-    server_metadata_url=GOOGLE_DISCOVERY_URL,
     client_kwargs={
         'scope': 'openid profile email'  # Permisos para acceder al perfil y email del usuario
     }
