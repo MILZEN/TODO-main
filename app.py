@@ -281,6 +281,22 @@ def home(username):
     
     return render_template('home.html', tasks=tasks, username=username, calendar_events=calendar_events)
 
+@app.route('/add/<username>', methods=['POST'])
+def add_task(username):
+    title = request.form.get('title')
+    priority = request.form.get('priority')
+
+    if title:
+        mongo.db.tasks.insert_one({
+            'title': title,
+            'priority': priority,
+            'username': username,
+            'completed': False
+        })
+
+    tasks = mongo.db.tasks.find({"username": username})
+    return render_template('home.html', tasks=tasks, username=username)
+
 @app.route('/edit/<id>', methods=['GET', 'POST'])
 def edit_task(id):
     task = mongo.db.tasks.find_one({"_id": ObjectId(id)})
