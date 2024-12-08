@@ -9,6 +9,7 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId  # Para manejar ObjectId de MongoDB
+import mysql.connector
 from mysql.connector import Error
 import bcrypt
 from dotenv import load_dotenv
@@ -18,8 +19,6 @@ import secrets
 import psycopg2
 from psycopg2 import Error
 import logging
-from googleapiclient.discovery import build
-from google.oauth2.credentials import Credentials
 
 # Cargar variables de entorno
 load_dotenv()
@@ -52,16 +51,16 @@ app.logger.debug(f"GOOGLE_CLIENT_SECRET: {os.getenv('GOOGLE_CLIENT_SECRET')}")
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = os.getenv('GOOGLE_DISCOVERY_URL')
-GOOGLE_SCOPES = os.getenv('GOOGLE_SCOPES', 'openid profile email')
+PEOPLE_API_SCOPE = os.getenv('PEOPLE_API_SCOPE')
 
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
     client_id=GOOGLE_CLIENT_ID,
     client_secret=GOOGLE_CLIENT_SECRET,
-    server_metadata_url=GOOGLE_DISCOVERY_URL,
+    server_metadata_url=GOOGLE_DISCOVERY_URL,  # Endpoint de descubrimiento
     client_kwargs={
-        'scope': GOOGLE_SCOPES  # Usar el scope definido previamente
+        'scope': 'openid profile email'  # Permisos para acceder al perfil y email del usuario
     }
 )
 
@@ -98,42 +97,6 @@ def gen_hash(password):
 
 def check_hash(password, hashed):
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
-
-# Función para obtener los eventos de Google Calendar
-def get_google_calendar_events():
-    if 'google_token' not in session:
-        flash('You need to be logged in with Google to view calendar events', 'danger')
-        return None
-
-    google_token = session['google_token']
-    
-    # Verificar si el token tiene todos los campos necesarios
-    if not all(key in google_token for key in ('refresh_token', 'client_id', 'client_secret')):
-        flash("Your session has expired or the token is incomplete. Please log in again.", 'danger')
-        return redirect(url_for('login_google'))
-
-    try:
-        credentials = Credentials.from_authorized_user_info(info=google_token)
-    except ValueError as e:
-        flash(f"Token error: {str(e)}", "danger")
-        return redirect(url_for('login_google'))
-
-    try:
-        # Construir el servicio de la API de Google Calendar
-        service = build('calendar', 'v3', credentials=credentials)
-        events_result = service.events().list(
-            calendarId='primary', timeMin='2024-12-01T00:00:00Z', maxResults=10, singleEvents=True, orderBy='startTime'
-        ).execute()
-        events = events_result.get('items', [])
-
-        # Si no hay eventos
-        if not events:
-            return None
-
-        return events
-    except Exception as e:
-        flash(f'Error retrieving calendar events: {e}', 'danger')
-        return None
 
 # Rutas y lógica de la aplicación
 @app.route('/')
@@ -225,7 +188,6 @@ def auth_callback():
         # Obtener el token de acceso de Google
         token = google.authorize_access_token()
         print("Token de acceso recibido:", token)  # Depuración: Imprimir el token recibido
-        session['google_token'] = token
 
         # Intentar parsear el ID token con el nonce
         user = google.parse_id_token(token, nonce=nonce)
@@ -271,27 +233,14 @@ def auth_callback():
 
 @app.route('/home/<username>')
 def home(username):
-    if 'username' not in session:
-        flash('You need to be logged in to access your tasks', 'danger')
-        return redirect(url_for('login'))  # Redirige a la página de login si no hay sesión
-
-    username = session['username']  # Asegúrate de que el username provenga de la sesión
-
-    tasks = mongo.db.tasks.find({"username": username})  # Filtrar las tareas por el username de la sesión
-
-    # Obtener los eventos del calendario de Google
-    calendar_events = get_google_calendar_events()
-
-    return render_template('home.html', tasks=tasks, username=username, calendar_events=calendar_events)
+    # Obtener el username de la sesión si no se pasa en la URL
+    if 'username' in session:
+        username = session['username']
+    tasks = mongo.db.tasks.find({"username": username})
+    return render_template('home.html', tasks=tasks, username=username)
 
 @app.route('/add/<username>', methods=['POST'])
 def add_task(username):
-    if 'username' not in session:  # Verificar si el usuario está autenticado
-        flash('You need to be logged in to add tasks', 'danger')
-        return redirect(url_for('login'))
-
-    username = session['username']  # Obtener el username de la sesión
-
     title = request.form.get('title')
     priority = request.form.get('priority')
 
@@ -299,31 +248,21 @@ def add_task(username):
         mongo.db.tasks.insert_one({
             'title': title,
             'priority': priority,
-            'username': username,  # Asociar la tarea al usuario
+            'username': username,
             'completed': False
         })
 
-    tasks = mongo.db.tasks.find({"username": username})  # Filtrar tareas por el username del usuario
+    tasks = mongo.db.tasks.find({"username": username})
     return render_template('home.html', tasks=tasks, username=username)
 
 @app.route('/edit/<id>', methods=['GET', 'POST'])
 def edit_task(id):
-    if 'username' not in session:  # Verificar si el usuario está autenticado
-        flash('You need to be logged in to edit tasks', 'danger')
-        return redirect(url_for('login'))
-
-    task = mongo.db.tasks.find_one({"_id": ObjectId(id), "username": session['username']})  # Filtrar por username
-
-    if not task:
-        flash('Task not found or you do not have permission to edit it', 'danger')
-        return redirect(url_for('home', username=session['username']))
-
+    task = mongo.db.tasks.find_one({"_id": ObjectId(id)})
     if request.method == 'POST':
         new_title = request.form.get('title')
         new_priority = request.form.get('priority')
         mongo.db.tasks.update_one({'_id': ObjectId(id)}, {'$set': {'title': new_title, 'priority': new_priority}})
-        return redirect(url_for('home', username=session['username']))
-
+        return redirect(url_for('home', username=task['username']))
     return render_template('edit.html', task=task)
 
 @app.route('/update-completion/<id>', methods=['POST'])
