@@ -171,9 +171,9 @@ def login_google():
     session['nonce'] = nonce  # Guardar el nonce en la sesión
 
     # Redirigir a Google para autenticación
-    redirect_uri = "https://tasked-76dp.onrender.com/login/callback"
+    redirect_uri = url_for('auth_callback', _external=True)
     print(f"Redirect URI: {redirect_uri}")  # Verificar la URL generada
-    return google.authorize_redirect(redirect_uri)
+    return google.authorize_redirect(redirect_uri, nonce=nonce)
 
 @app.route('/login/callback')
 def auth_callback():
