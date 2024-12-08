@@ -69,13 +69,14 @@ app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/todo
 mongo = PyMongo(app)
 
 # Verificar la conexión a MongoDB
-@app._got_first_request
+@app.before_request
 def verify_mongo_connection():
     try:
         mongo.db.command('ping')  # Comando para hacer ping a la base de datos
         app.logger.debug("Conexión a MongoDB exitosa.")
     except Exception as e:
         app.logger.error(f"Error al conectar con MongoDB: {e}")
+
 
 # Conexión a la base de datos SQL (Postgre en Deployment)
 def create_connection():
