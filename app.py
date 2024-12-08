@@ -2,7 +2,7 @@
     Título: TASKED
     Autor: Miguel Romo
     Proyecto de Pruebas de Software
-    Fecha de actualización: 08/12/2024 12:31PM
+    Fecha de actualización: 08/12/2024 10:20AM
 '''
 
 # LIBRERÍAS
@@ -68,6 +68,15 @@ google = oauth.register(
 app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/todolist")
 mongo = PyMongo(app)
 
+# Verificar la conexión a MongoDB
+@app._got_first_request
+def verify_mongo_connection():
+    try:
+        mongo.db.command('ping')  # Comando para hacer ping a la base de datos
+        app.logger.debug("Conexión a MongoDB exitosa.")
+    except Exception as e:
+        app.logger.error(f"Error al conectar con MongoDB: {e}")
+
 # Conexión a la base de datos SQL (Postgre en Deployment)
 def create_connection():
     connection = None
@@ -86,7 +95,7 @@ def create_connection():
                 sslmode='require'  # Usamos SSL para conexiones seguras en Render
             )
     except Error as e:
-        print(f"Error al conectar a la base de datos: {e}")
+        app.logger.error(f"Error al conectar a la base de datos: {e}")
     
     return connection
 
@@ -168,72 +177,8 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/login/google')
-def login_google():
-    # Generar un nonce aleatorio
-    nonce = secrets.token_urlsafe(16)
-    session['nonce'] = nonce  # Guardar el nonce en la sesión
-
-    # Redirigir a Google para autenticación
-    redirect_uri = url_for('auth_callback', _external=True)
-    print(f"Redirect URI: {redirect_uri}")  # Verificar la URL generada
-    return google.authorize_redirect(redirect_uri, nonce=nonce)
-
-@app.route('/login/callback')
-def auth_callback():
-    # Recuperar el nonce de la sesión
-    nonce = session.pop('nonce', None)
-
-    try:
-        # Obtener el token de acceso de Google
-        token = google.authorize_access_token()
-        print("Token de acceso recibido:", token)  # Depuración: Imprimir el token recibido
-
-        # Intentar parsear el ID token con el nonce
-        user = google.parse_id_token(token, nonce=nonce)
-        if user is None:
-            raise ValueError("El ID token es None")
-        
-        print("Perfil de usuario:", user)  # Depuración: Imprimir el perfil del usuario
-
-    except Exception as e:
-        flash(f"Error al obtener el perfil del usuario: {e}", "danger")
-        return redirect(url_for('login'))
-
-    # Conectar a la base de datos
-    connection = create_connection()
-    cursor = connection.cursor()
-
-    # Comprobar si el usuario ya existe en la base de datos
-    cursor.execute("SELECT username FROM users WHERE email=%s", (user['email'],))
-    result = cursor.fetchone()
-
-    if result:
-        username = result[0]
-    else:
-        # Si el usuario no existe, crear uno nuevo
-        username = user['given_name']  # Usar el nombre proporcionado por Google
-        hashed_pwd = gen_hash('defaultpassword')  # Asignar una contraseña temporal
-
-        cursor.execute(
-            "INSERT INTO users (username, email, password_hash, first_name, last_name) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (username, user['email'], hashed_pwd, user['given_name'], user['family_name'])
-        )
-        connection.commit()
-
-    cursor.close()
-    connection.close()
-
-    # Almacenar el username en la sesión
-    session['username'] = username
-
-    # Redirigir al usuario a la página de home con el nombre de usuario
-    return redirect(url_for('home', username=username))
-
 @app.route('/home/<username>')
 def home(username):
-    # Obtener el username de la sesión si no se pasa en la URL
     if 'username' in session:
         username = session['username']
     tasks = mongo.db.tasks.find({"username": username})
