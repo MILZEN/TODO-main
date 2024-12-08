@@ -19,8 +19,6 @@ import secrets
 import psycopg2
 from psycopg2 import Error
 import logging
-from googleapiclient.discovery import build
-from google.auth.transport.requests import Request
 
 # Cargar variables de entorno
 load_dotenv()
@@ -44,7 +42,7 @@ else:
 
 # Inicialización de Flask y OAuth
 app = Flask(__name__)
-app.secret_key = os.getenv('FLASK_SECRET_KEY')
+app.secret_key = 'tas^kedpas!sword?'  # Necesario para flash messages
 app.logger.setLevel(logging.DEBUG)
 
 app.logger.debug(f"GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
@@ -54,7 +52,6 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = os.getenv('GOOGLE_DISCOVERY_URL')
 PEOPLE_API_SCOPE = os.getenv('PEOPLE_API_SCOPE')
-GOOGLE_CALENDAR_SCOPE = 'https://www.googleapis.com/auth/calendar.readonly'
 
 oauth = OAuth(app)
 google = oauth.register(
@@ -63,13 +60,22 @@ google = oauth.register(
     client_secret=GOOGLE_CLIENT_SECRET,
     server_metadata_url=GOOGLE_DISCOVERY_URL,  # Endpoint de descubrimiento
     client_kwargs={
-        'scope': 'openid profile email ' + GOOGLE_CALENDAR_SCOPE
+        'scope': 'openid profile email'  # Permisos para acceder al perfil y email del usuario
     }
 )
 
 # Conexión a la base de datos MongoDB
 app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/todolist")
 mongo = PyMongo(app)
+
+# Verificar la conexión a MongoDB
+@app._got_first_request
+def verify_mongo_connection():
+    try:
+        mongo.db.command('ping')  # Comando para hacer ping a la base de datos
+        app.logger.debug("Conexión a MongoDB exitosa.")
+    except Exception as e:
+        app.logger.error(f"Error al conectar con MongoDB: {e}")
 
 # Conexión a la base de datos SQL (Postgre en Deployment)
 def create_connection():
@@ -89,7 +95,7 @@ def create_connection():
                 sslmode='require'  # Usamos SSL para conexiones seguras en Render
             )
     except Error as e:
-        print(f"Error al conectar a la base de datos: {e}")
+        app.logger.error(f"Error al conectar a la base de datos: {e}")
     
     return connection
 
@@ -171,112 +177,12 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/login/google')
-def login_google():
-    # Generar un nonce aleatorio
-    nonce = secrets.token_urlsafe(16)
-    session['nonce'] = nonce  # Guardar el nonce en la sesión
-
-    # Redirigir a Google para autenticación
-    redirect_uri = url_for('auth_callback', _external=True)
-    print(f"Redirect URI: {redirect_uri}")  # Verificar la URL generada
-    return google.authorize_redirect(redirect_uri, nonce=nonce)
-
-@app.route('/login/callback')
-def auth_callback():
-    # Recuperar el nonce de la sesión
-    nonce = session.pop('nonce', None)
-
-    try:
-        # Obtener el token de acceso de Google
-        token = google.authorize_access_token()
-        print("Token de acceso recibido:", token)  # Depuración: Imprimir el token recibido
-
-        # Intentar parsear el ID token con el nonce
-        user = google.parse_id_token(token, nonce=nonce)
-        if user is None:
-            raise ValueError("El ID token es None")
-        
-        print("Perfil de usuario:", user)  # Depuración: Imprimir el perfil del usuario
-
-        # Usar la API de Google Calendar para obtener eventos
-        credentials = google.credentials_from_token(token)
-
-        # Crear el servicio de Google Calendar utilizando las credenciales
-        service = build('calendar', 'v3', credentials=credentials)
-
-        # Llamada a la API para obtener los próximos 10 eventos
-        events_result = service.events().list(
-            calendarId='primary', timeMin='2024-12-08T00:00:00Z', maxResults=10, singleEvents=True, orderBy='startTime'
-        ).execute()
-
-        events = events_result.get('items', [])
-
-        if not events:
-            flash('No upcoming events found.', 'info')
-        else:
-            flash('Events fetched successfully.', 'success')
-            for event in events:
-                print(f"Event: {event['summary']} - Start: {event['start']['dateTime']}")
-
-    except Exception as e:
-        flash(f"Error al obtener el perfil del usuario: {e}", "danger")
-        return redirect(url_for('login'))
-
-    # Conectar a la base de datos
-    connection = create_connection()
-    cursor = connection.cursor()
-
-    # Comprobar si el usuario ya existe en la base de datos
-    cursor.execute("SELECT username FROM users WHERE email=%s", (user['email'],))
-    result = cursor.fetchone()
-
-    if result:
-        username = result[0]
-    else:
-        # Si el usuario no existe, crear uno nuevo
-        username = user['given_name']  # Usar el nombre proporcionado por Google
-        hashed_pwd = gen_hash('defaultpassword')  # Asignar una contraseña temporal
-
-        cursor.execute(
-            "INSERT INTO users (username, email, password_hash, first_name, last_name) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (username, user['email'], hashed_pwd, user['given_name'], user['family_name'])
-        )
-        connection.commit()
-
-    cursor.close()
-    connection.close()
-
-    # Almacenar el username en la sesión
-    session['username'] = username
-
-    # Redirigir al usuario a la página de home con el nombre de usuario
-    return redirect(url_for('home', username=username))
-
 @app.route('/home/<username>')
 def home(username):
-    # Obtener el username de la sesión si no se pasa en la URL
     if 'username' in session:
         username = session['username']
-    
-    # Obtener las tareas de la base de datos MongoDB
     tasks = mongo.db.tasks.find({"username": username})
-
-    # Verificar si hay un token de Google en la sesión
-    google_token = session.get('google_token')
-    if google_token:
-        # Usar el token para crear un servicio de Google Calendar
-        credentials = google.oauth2.credentials.Credentials(google_token['access_token'])
-        calendar_service = build('calendar', 'v3', credentials=credentials)
-
-        # Obtener los próximos 5 eventos del calendario
-        events_result = calendar_service.events().list(calendarId='primary', maxResults=5, singleEvents=True, orderBy='startTime').execute()
-        events = events_result.get('items', [])
-    else:
-        events = []
-
-    return render_template('home.html', tasks=tasks, username=username, events=events)
+    return render_template('home.html', tasks=tasks, username=username)
 
 @app.route('/add/<username>', methods=['POST'])
 def add_task(username):
