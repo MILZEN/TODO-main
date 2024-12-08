@@ -115,7 +115,7 @@ def register():
             try:
                 cursor = connection.cursor()
                 query = """
-                INSERT INTO user (username, email, password_hash, first_name, last_name)
+                INSERT INTO users (username, email, password_hash, first_name, last_name)
                 VALUES (%s, %s, %s, %s, %s)
                 """
                 cursor.execute(query, (username, email, hashed_pwd, first_name, last_name))
@@ -141,7 +141,7 @@ def login():
         if connection is not None:
             try:
                 cursor = connection.cursor()
-                query = "SELECT password_hash, username FROM user WHERE email=%s"
+                query = "SELECT password_hash, username FROM users WHERE email=%s"
                 cursor.execute(query, (email,))
                 result = cursor.fetchone()
 
