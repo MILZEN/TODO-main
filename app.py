@@ -173,7 +173,8 @@ def login_google():
 
     # Redirigir a Google para autenticación
     redirect_uri = url_for('auth_callback', _external=True)
-    return google.authorize_redirect(redirect_uri, nonce=nonce)
+    print(f"Redirect URI: {redirect_uri}")  # Verificar la URL generada
+    return google.authorize_redirect(redirect_uri)
 
 @app.route('/login/callback')
 def auth_callback():
