@@ -205,7 +205,7 @@ def auth_callback():
     cursor = connection.cursor()
 
     # Comprobar si el usuario ya existe en la base de datos
-    cursor.execute("SELECT username FROM user WHERE email=%s", (user['email'],))
+    cursor.execute("SELECT username FROM users WHERE email=%s", (user['email'],))
     result = cursor.fetchone()
 
     if result:
@@ -216,7 +216,7 @@ def auth_callback():
         hashed_pwd = gen_hash('defaultpassword')  # Asignar una contraseña temporal
 
         cursor.execute(
-            "INSERT INTO user (username, email, password_hash, first_name, last_name) "
+            "INSERT INTO users (username, email, password_hash, first_name, last_name) "
             "VALUES (%s, %s, %s, %s, %s)",
             (username, user['email'], hashed_pwd, user['given_name'], user['family_name'])
         )
