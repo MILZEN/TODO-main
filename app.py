@@ -63,7 +63,7 @@ google = oauth.register(
     client_secret=GOOGLE_CLIENT_SECRET,
     server_metadata_url=GOOGLE_DISCOVERY_URL,  # Endpoint de descubrimiento
     client_kwargs={
-        'scope': 'openid profile email ' + GOOGLE_CALENDAR_SCOPE  # Combinando scope de OAuth y Calendar
+        'scope': 'openid profile email ' + GOOGLE_CALENDAR_SCOPE
     }
 )
 
@@ -199,16 +199,10 @@ def auth_callback():
         
         print("Perfil de usuario:", user)  # Depuración: Imprimir el perfil del usuario
 
-        # Obtener el acceso al calendar utilizando el token
-        credentials = google.oauth2.credentials.Credentials(
-            token['access_token'],
-            refresh_token=token.get('refresh_token'),
-            token_uri="https://oauth2.googleapis.com/token",
-            client_id=GOOGLE_CLIENT_ID,
-            client_secret=GOOGLE_CLIENT_SECRET
-        )
-
         # Usar la API de Google Calendar para obtener eventos
+        credentials = google.credentials_from_token(token)
+
+        # Crear el servicio de Google Calendar utilizando las credenciales
         service = build('calendar', 'v3', credentials=credentials)
 
         # Llamada a la API para obtener los próximos 10 eventos
