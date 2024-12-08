@@ -173,7 +173,7 @@ def login_google():
     # Redirigir a Google para autenticación
     redirect_uri = "https://tasked-76dp.onrender.com/login/callback"
     print(f"Redirect URI: {redirect_uri}")  # Verificar la URL generada
-    return google.authorize_redirect(redirect_uri, nonce=nonce)
+    return google.authorize_redirect(redirect_uri)
 
 @app.route('/login/callback')
 def auth_callback():
