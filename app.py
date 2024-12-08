@@ -1,3 +1,10 @@
+'''
+    Título: TASKED
+    Autor: Miguel Romo
+    Proyecto de Pruebas de Software
+'''
+
+# LIBRERÍAS
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId  # Para manejar ObjectId de MongoDB
@@ -8,12 +15,32 @@ from dotenv import load_dotenv
 from authlib.integrations.flask_client import OAuth
 import os
 import secrets
+import psycopg2
+from psycopg2 import Error
 
+# Cargar variables de entorno
+load_dotenv()
 
+# Usar 'dev' como valor predeterminado de entorno
+environment = os.getenv('FLASK_ENV', 'development')
+
+# Seleccionar entorno
+if environment == 'development':
+    # Variables de entorno locales (development)
+    MYSQL_HOST = os.getenv('MYSQL_HOST', 'localhost')
+    MYSQL_USER = os.getenv('MYSQL_USER', 'root')
+    MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
+    MYSQL_DATABASE = os.getenv('MYSQL_DATABASE', 'task')
+else:
+    # Variables de entorno de Render (deployment)
+    MYSQL_HOST = os.getenv('MYSQL_HOST')
+    MYSQL_USER = os.getenv('MYSQL_USER')
+    MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
+    MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
+
+# Inicialización de Flask y OAuth
 app = Flask(__name__)
 app.secret_key = 'tas^kedpas!sword?'  # Necesario para flash messages
-
-load_dotenv()
 
 app.logger.debug(f"GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
 app.logger.debug(f"GOOGLE_CLIENT_SECRET: {os.getenv('GOOGLE_CLIENT_SECRET')}")
@@ -23,7 +50,6 @@ GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = os.getenv('GOOGLE_DISCOVERY_URL')
 PEOPLE_API_SCOPE = os.getenv('PEOPLE_API_SCOPE')
 
-# Inicialización de OAuth
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
@@ -36,21 +62,22 @@ google = oauth.register(
 )
 
 # Conexión a la base de datos MongoDB
-app.config["MONGO_URI"] = "mongodb://localhost:27017/todolist"
+app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/todolist")
 mongo = PyMongo(app)
 
-# Conexión a la base de datos SQL
+# Conexión a la base de datos SQL (Postgre en Deployment)
 def create_connection():
     connection = None
     try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="task"
+        connection = psycopg2.connect(
+            host=MYSQL_HOST,
+            user=MYSQL_USER,
+            password=MYSQL_PASSWORD,
+            database=MYSQL_DATABASE,
+            sslmode='require'  # Usamos SSL para conexiones seguras en Render
         )
     except Error as e:
-        print(f"Error al conectar a MySQL: {e}")
+        print(f"Error al conectar a la base de datos: {e}")
     
     return connection
 
