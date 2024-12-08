@@ -105,7 +105,18 @@ def get_google_calendar_events():
         flash('You need to be logged in with Google to view calendar events', 'danger')
         return None
 
-    credentials = Credentials.from_authorized_user_info(info=session['google_token'])
+    google_token = session['google_token']
+    
+    # Verificar si el token tiene todos los campos necesarios
+    if not all(key in google_token for key in ('refresh_token', 'client_id', 'client_secret')):
+        flash("Your session has expired or the token is incomplete. Please log in again.", 'danger')
+        return redirect(url_for('login_google'))
+
+    try:
+        credentials = Credentials.from_authorized_user_info(info=google_token)
+    except ValueError as e:
+        flash(f"Token error: {str(e)}", "danger")
+        return redirect(url_for('login_google'))
 
     try:
         # Construir el servicio de la API de Google Calendar
