@@ -25,8 +25,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt  # Instala las dependencias de tu proyecto
-
+      
     # Omitimos las pruebas por ahora
     # - name: Run tests
     #   run: |
     #     pytest  # Aquí se ejecutarían las pruebas en el futuro
+    #Próximo
