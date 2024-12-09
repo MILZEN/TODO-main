@@ -1,14 +1,14 @@
 '''
-    Título: TASKED
-    Autor: Miguel Romo
-    Proyecto de Pruebas de Software
-    Fecha de actualización: 08/12/2024 12:31PM
+    Title: TASKED
+    Author: Miguel Romo
+    Software Testing Project
+    Last Update: 08/12/2024 03:56 PM
 '''
 
-# LIBRERÍAS
+# LIBRARIES
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_pymongo import PyMongo
-from bson.objectid import ObjectId  # Para manejar ObjectId de MongoDB
+from bson.objectid import ObjectId
 import mysql.connector
 from mysql.connector import Error
 import bcrypt
@@ -20,77 +20,79 @@ import psycopg2
 from psycopg2 import Error
 import logging
 
-# Cargar variables de entorno
+# Load Environment Variables
 load_dotenv()
 
-# Usar 'dev' como valor predeterminado de entorno
+# Use 'dev' as default environment
 environment = os.getenv('FLASK_ENV', 'development')
 
-# Seleccionar entorno
+# Select environment
 if environment == 'development':
-    # Variables de entorno locales (development)
+    # Local Environment Variables (development)
     MYSQL_HOST = os.getenv('MYSQL_HOST', 'localhost')
     MYSQL_USER = os.getenv('MYSQL_USER', 'root')
     MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
     MYSQL_DATABASE = os.getenv('MYSQL_DATABASE', 'task')
 else:
-    # Variables de entorno de Render (deployment)
+    # Render Environment Variables (deployment)
     MYSQL_HOST = os.getenv('MYSQL_HOST')
     MYSQL_USER = os.getenv('MYSQL_USER')
     MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
     MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
 
-# Inicialización de Flask y OAuth
-app = Flask(__name__)
-app.secret_key = 'tas^kedpas!sword?'  # Necesario para flash messages
+# Flask and OAuth init
+app = Flask(__name__) # Init Flask
+app.secret_key = 'tas^kedpas!sword?'  # Flash messages
 app.logger.setLevel(logging.DEBUG)
 
 app.logger.debug(f"GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
 app.logger.debug(f"GOOGLE_CLIENT_SECRET: {os.getenv('GOOGLE_CLIENT_SECRET')}")
 
+# Recovery Google data from environment variables
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = os.getenv('GOOGLE_DISCOVERY_URL')
 PEOPLE_API_SCOPE = os.getenv('PEOPLE_API_SCOPE')
 
+# Init OAuth
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
-    client_id=GOOGLE_CLIENT_ID,
-    client_secret=GOOGLE_CLIENT_SECRET,
-    server_metadata_url=GOOGLE_DISCOVERY_URL,  # Endpoint de descubrimiento
+    client_id=GOOGLE_CLIENT_ID, # Google Client ID
+    client_secret=GOOGLE_CLIENT_SECRET, # Google Client Secret
+    server_metadata_url=GOOGLE_DISCOVERY_URL,  # Discovery Endpoint
     client_kwargs={
-        'scope': 'openid profile email'  # Permisos para acceder al perfil y email del usuario
+        'scope': 'openid profile email'  # Access to user profile and email
     }
 )
 
-# Conexión a la base de datos MongoDB
+# MongoDB connection
 app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/todolist")
 mongo = PyMongo(app)
 
-# Conexión a la base de datos SQL (Postgre en Deployment)
+# SQL connection (PostgreSQL)
 def create_connection():
     connection = None
     try:
-        # Usar DATABASE_URL para PostgreSQL en producción
+        # Use DATABASE_URL for PostgreSQL in deployment
         database_url = os.getenv('DATABASE_URL')
         if database_url:
             connection = psycopg2.connect(database_url, sslmode='require')
         else:
-            # Si no se encuentra DATABASE_URL, intenta con las variables de entorno locales
+            # If don't find DATABASE_URL, try local environment variables
             connection = psycopg2.connect(
                 host=MYSQL_HOST,
                 user=MYSQL_USER,
                 password=MYSQL_PASSWORD,
                 database=MYSQL_DATABASE,
-                sslmode='require'  # Usamos SSL para conexiones seguras en Render
+                sslmode='require'  # SSL for secure Render connections
             )
     except Error as e:
-        print(f"Error al conectar a la base de datos: {e}")
+        print(f"Error connecting the database: {e}")
     
     return connection
 
-# Funciones de hash para contraseñas
+# Hash functions for passwrds
 def gen_hash(password):
     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     return hashed.decode('utf-8')
@@ -98,13 +100,14 @@ def gen_hash(password):
 def check_hash(password, hashed):
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
-# Rutas y lógica de la aplicación
+# App routes and logic
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    # Pick data from html form
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
@@ -112,9 +115,11 @@ def register():
         first_name = request.form['first_name']
         last_name = request.form['last_name']
 
-        hashed_pwd = gen_hash(password)
-        connection = create_connection()
+        hashed_pwd = gen_hash(password) # Hash password
+        
+        connection = create_connection() # DB connection
 
+        # Push user login data into DB
         if connection is not None:
             try:
                 cursor = connection.cursor()
@@ -137,11 +142,13 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Pick data from html form
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
         connection = create_connection()
 
+        # Check user email and password
         if connection is not None:
             try:
                 cursor = connection.cursor()
@@ -168,52 +175,52 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/login/google')
+@app.route('/login/google') # Login using Google OAuth
 def login_google():
-    # Generar un nonce aleatorio
+    # Generate a random nonce
     nonce = secrets.token_urlsafe(16)
-    session['nonce'] = nonce  # Guardar el nonce en la sesión
+    session['nonce'] = nonce  # Save nonce in session
 
-    # Redirigir a Google para autenticación
+    # Redirect Google for auth
     redirect_uri = url_for('auth_callback', _external=True)
-    print(f"Redirect URI: {redirect_uri}")  # Verificar la URL generada
+    print(f"Redirect URI: {redirect_uri}")  # Verify generated URL
     return google.authorize_redirect(redirect_uri, nonce=nonce)
 
 @app.route('/login/callback')
 def auth_callback():
-    # Recuperar el nonce de la sesión
+    # Recovery session nonce
     nonce = session.pop('nonce', None)
 
     try:
-        # Obtener el token de acceso de Google
+        # Obtain Google access token
         token = google.authorize_access_token()
-        print("Token de acceso recibido:", token)  # Depuración: Imprimir el token recibido
+        print("Received access token:", token)  # Print the received token
 
-        # Intentar parsear el ID token con el nonce
+        # Parse ID token with nonce
         user = google.parse_id_token(token, nonce=nonce)
         if user is None:
-            raise ValueError("El ID token es None")
+            raise ValueError("ID token is None")
         
-        print("Perfil de usuario:", user)  # Depuración: Imprimir el perfil del usuario
+        print("User profile:", user)  # Print user profile
 
     except Exception as e:
-        flash(f"Error al obtener el perfil del usuario: {e}", "danger")
+        flash(f"Error obtaining user profile: {e}", "danger")
         return redirect(url_for('login'))
 
-    # Conectar a la base de datos
+    # Database connection
     connection = create_connection()
     cursor = connection.cursor()
 
-    # Comprobar si el usuario ya existe en la base de datos
+    # Check if the user exists
     cursor.execute("SELECT username FROM users WHERE email=%s", (user['email'],))
     result = cursor.fetchone()
 
     if result:
         username = result[0]
     else:
-        # Si el usuario no existe, crear uno nuevo
-        username = user['given_name']  # Usar el nombre proporcionado por Google
-        hashed_pwd = gen_hash('defaultpassword')  # Asignar una contraseña temporal
+        # If user doesn't exist, create 
+        username = user['given_name']  # Use the Google given name
+        hashed_pwd = gen_hash('defaultpassword')  # Temp password
 
         cursor.execute(
             "INSERT INTO users (username, email, password_hash, first_name, last_name) "
@@ -225,25 +232,27 @@ def auth_callback():
     cursor.close()
     connection.close()
 
-    # Almacenar el username en la sesión
+    # Store username in session
     session['username'] = username
 
-    # Redirigir al usuario a la página de home con el nombre de usuario
+    # Redirect user to home page with username
     return redirect(url_for('home', username=username))
 
 @app.route('/home/<username>')
 def home(username):
-    # Obtener el username de la sesión si no se pasa en la URL
+    # Obtain username in session
     if 'username' in session:
         username = session['username']
-    tasks = mongo.db.tasks.find({"username": username})
+    tasks = mongo.db.tasks.find({"username": username}) # Tasks that user created
     return render_template('home.html', tasks=tasks, username=username)
 
 @app.route('/add/<username>', methods=['POST'])
 def add_task(username):
+    # Data from form
     title = request.form.get('title')
     priority = request.form.get('priority')
 
+    # Insert in MongoDB new task
     if title:
         mongo.db.tasks.insert_one({
             'title': title,
@@ -253,7 +262,7 @@ def add_task(username):
         })
 
     tasks = mongo.db.tasks.find({"username": username})
-    return render_template('home.html', tasks=tasks, username=username)
+    return render_template('home.html', tasks=tasks, username=username) # Render home again, will show the new task too
 
 @app.route('/edit/<id>', methods=['GET', 'POST'])
 def edit_task(id):
@@ -285,7 +294,7 @@ def delete_task(id):
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)  # Eliminar el username de la sesión
+    session.pop('username', None)  # Delete username of session
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
