@@ -1,3 +1,5 @@
+# Prueba de Auth
+
 from app import gen_hash, check_hash
 
 def test_gen_hash():

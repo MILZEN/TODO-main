@@ -1,3 +1,4 @@
+# Prueba de DB
 def test_db_connection():
     from app import create_connection
     connection = create_connection()
