@@ -7,24 +7,26 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Use Ubuntu as OS
+    runs-on: ubuntu-latest  # Use Ubuntu as OS for execution
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2  # Do a code checkout
+      uses: actions/checkout@v2  # Code checkout
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.11'  # Python version
 
-    - name: Install dependencies
+    - name: Install Render CLI
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt  # Install the project dependencies
+        curl -fsSL https://github.com/render-oss/cli/releases/latest/download/render-linux-amd64 -o /usr/local/bin/render
+        chmod +x /usr/local/bin/render  # Descargar e instalar el CLI de Render
 
     - name: Deploy to Render
       run: |
-        curl -fsSL https://render.com/deploy/scripts/render.sh | bash  # Deploy on Render
+        render deploy service \
+          --service-id ${{ secrets.RENDER_SERVICE_ID }} \
+          --api-key ${{ secrets.RENDER_API_KEY }}
       env:
-        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Añade tu API Key de Render como un secreto en GitHub
+        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Use
