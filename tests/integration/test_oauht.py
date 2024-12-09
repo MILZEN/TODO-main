@@ -1,3 +1,5 @@
+# Prueba de OAuth
+
 def test_google_login(client, monkeypatch):
     def mock_authorize_redirect(*args, **kwargs):
         return "Mocked OAuth Redirect"

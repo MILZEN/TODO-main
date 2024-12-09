@@ -1,3 +1,4 @@
+# Prueba de auth
 from selenium import webdriver
 
 def test_user_registration():
