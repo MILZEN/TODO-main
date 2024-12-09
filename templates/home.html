@@ -20,11 +20,11 @@
         <form action="{{ url_for('add_task', username=username) }}" method="POST">
             <input type="text" name="title" placeholder="Add new task" required>
             
-            <label for="priority">Prioridad:</label>
+            <label for="priority">Priority:</label>
             <select id="priority" name="priority">
-                <option value="low">Baja</option>
-                <option value="medium">Media</option>
-                <option value="high">Alta</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
             </select>
         
             <button type="submit">Add Task</button>
@@ -50,10 +50,10 @@
 
     <script>
         function markCompleted(button, taskId) {
-            // Deshabilitar el botón inmediatamente para evitar múltiples clics
+            // Disable the button to avoid multi clicks
             button.disabled = true;
     
-            // Enviar la solicitud al servidor
+            // Send request to server
             fetch(`/update-completion/${taskId}`, {
                 method: 'POST',
                 body: JSON.stringify({ completed: true }),
@@ -62,17 +62,17 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Aplicar cambios visuales
+                    // Visual Changes
                     const taskItem = button.closest('li');
                     taskItem.classList.add('completed');
                 } else {
                     console.error('Error updating task completion');
-                    button.disabled = false; // Reactivar el botón si hay error
+                    button.disabled = false; // Activate the button if there is an error
                 }
             })
             .catch(err => {
                 console.error(err);
-                button.disabled = false; // Reactivar el botón si hay error
+                button.disabled = false; // Reactivate the button if there is an error
             });
         }
     </script>

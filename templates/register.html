@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Usuario</title>
+    <title>User Register</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='img/icon.ico') }}">
 </head>
@@ -27,8 +27,8 @@
     {% endwith %}
 
     <div class="container">
-        <h2>Registro de Usuario</h2>
-        <!-- Formulario tradicional de registro -->
+        <h2>User Register</h2>
+        <!-- Manual Register Form -->
         <form action="{{ url_for('register') }}" method="POST" class="form-register">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" placeholder="Username" required>
@@ -48,7 +48,7 @@
             <button type="submit">Registrarse</button>
         </form>
 
-        <!-- Botón para registrarse con Google -->
+        <!-- Google Sign in button -->
         <a href="{{ url_for('login_google') }}">
             <button type="button">Register with Google</button>
         </a>

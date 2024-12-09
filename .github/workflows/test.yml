@@ -1,12 +1,9 @@
 name: Python CI
 
 on:
-  push:
-    branches:
-      - main  # Ejecuta esta acción en la rama principal
   pull_request:
     branches:
-      - main  # Ejecuta esta acción en pull requests hacia la rama principal
+      - main  # Execute tests just when main branch pull
 
 jobs:
   test:
@@ -19,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.11'  # Usar la versión 3.11 de Python
+        python-version: '3.11'  # Python version
 
     - name: Install dependencies
       run: |
