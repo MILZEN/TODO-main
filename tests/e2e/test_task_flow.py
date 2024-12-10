@@ -3,11 +3,12 @@
 from playwright.sync_api import sync_playwright
 import time
 
+
 def test_register_and_create_task():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        
+
         # Registro de usuario
         page.goto("http://localhost:5000/register")
         page.fill("input[name='username']", "testuser")
@@ -16,20 +17,22 @@ def test_register_and_create_task():
         page.fill("input[name='first_name']", "Test")
         page.fill("input[name='last_name']", "User")
         page.click("button[type='submit']")
-        page.wait_for_url("http://localhost:5000/")  # Esperar redirección a la home page
-        
+        # Esperar redirección a la home page
+        page.wait_for_url("http://localhost:5000/")
+
         # Crear tarea (esperar que el input de tarea esté disponible)
         page.fill("input[name='title']", "Test Task")
         page.fill("select[name='priority']", "High")
         page.click("button[type='submit']")
-        
-        # Esperar un poco para la creación de la tarea
-        page.wait_for_selector("ul#task-list li")  # Espera hasta que se cargue la lista de tareas
-        
+
+        # Espera hasta que se cargue la lista de tareas
+        page.wait_for_selector("ul#task-list li")
+
         # Verificar tarea creada
         assert "Test Task" in page.content()
 
         browser.close()
+
 
 def test_edit_and_delete_task():
     with sync_playwright() as p:
@@ -38,16 +41,17 @@ def test_edit_and_delete_task():
 
         # Iniciar sesión para obtener la URL de home con el username del usuario
         page.goto("http://localhost:5000/login")
-        page.fill("input[name='email']", "testuser@example.com")  # Usar un correo válido
+        page.fill("input[name='email']", "testuser@example.com")  # Use valid email
         page.fill("input[name='password']", "testpassword")
         page.click("button[type='submit']")
-        page.wait_for_load_state("load")  # Esperar a que la página se cargue correctamente
+        # Esperar a que la página se cargue correctamente
+        page.wait_for_load_state("load")
 
         # Esperar que la página home esté lista
-        page.wait_for_selector("h1")  # Ajusta el selector según lo que esté en tu página de inicio
+        page.wait_for_selector("h1")
 
         # Acceder a la página del usuario en home
-        username = "testuser"  # Este debe coincidir con el nombre de usuario después del login
+        username = "testuser"  # Must be equal than username after login
         page.goto(f"http://localhost:5000/home/{username}")
 
         # Editar tarea

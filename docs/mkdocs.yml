@@ -1,0 +1,21 @@
+site_name: 'TASKED App Documentation'
+theme:
+  name: 'material'
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Getting Started:
+      - Overview: getting_started/overview.md
+      - Configuration: getting_started/configuration.md
+  - Features:
+      - User Management: features/user_management.md
+      - Task Management: features/task_management.md
+  - API:
+      - Authentication: api/authentication.md
+      - Tasks: api/tasks.md
+  - Testing:
+      - Unit Tests: testing/unit.md
+      - Integration Tests: testing/integration.md
+      - End-to-End Tests: testing/e2e.md
+  - Troubleshooting: troubleshooting.md
