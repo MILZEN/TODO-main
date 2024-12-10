@@ -19,13 +19,19 @@ def client(app):
     # Return a test client to make HTTP requests
     return app.test_client()
 
+# Conftest.py
+
 @pytest.fixture
 def mock_db(mocker):
-    # Mocking the MongoDB
+    # Mocking MongoDB connection
     mock_db = MagicMock()
-    mock_db.tasks.find_one.return_value = {"title": "Task 1", "priority": "High"}
-    mock_db.tasks.insert_one.return_value = None  # Add task simulation
-    yield mock_db
+    mock_db.tasks.insert_one.return_value = None  # Simulating successful insert
+    
+    # Mocking the database to use the mocked instance instead of the real MongoDB
+    mocker.patch('app.mongo.db', mock_db)
+    
+    return mock_db
+
 
 @pytest.fixture
 def mock_postgres_db(mocker):

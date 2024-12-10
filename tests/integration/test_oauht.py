@@ -4,11 +4,11 @@ from app import oauth
 
 def test_google_login(client, monkeypatch):
     # Mocking the redirection function
-    def mock_authorize_redirect(*args, **kwargs):
+    def mock_authorize(*args, **kwargs):
         return "Mocked OAuth Redirect"
     
     # Function in OAuth instance
-    monkeypatch.setattr(oauth, "authorize_redirect", mock_authorize_redirect)
+    monkeypatch.setattr(oauth, "authorize", mock_authorize)
     
     # Login request
     response = client.get('/login/google')

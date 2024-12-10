@@ -7,6 +7,14 @@ import pytest
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+import pytest
+import time
+from selenium.webdriver.common.by import By
+
 @pytest.fixture(scope="module")
 def driver():
     # Configuration to use Chrome in headless mode
@@ -15,8 +23,11 @@ def driver():
     chrome_options.add_argument("--no-sandbox")  # Avoid sandbox issues
     chrome_options.add_argument("--disable-dev-shm-usage")  # Fix memory issues
 
+    # Use Service to specify ChromeDriver location
+    service = Service(ChromeDriverManager().install())
+
     # Init in headless mode
-    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     yield driver
     driver.quit()
 

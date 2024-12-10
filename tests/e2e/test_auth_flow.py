@@ -2,6 +2,7 @@
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 def test_user_registration():
@@ -11,8 +12,11 @@ def test_user_registration():
     chrome_options.add_argument("--no-sandbox")  # Avoid sandbox issues
     chrome_options.add_argument("--disable-dev-shm-usage")  # Fix memory issues
 
+    # Use Service to specify ChromeDriver location
+    service = Service(ChromeDriverManager().install())
+
     # Init in headless mode
-    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get("http://localhost:5000/register")
     driver.find_element("name", "username").send_keys("testuser")
     driver.find_element("name", "password").send_keys("password")
