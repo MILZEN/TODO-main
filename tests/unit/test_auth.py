@@ -1,4 +1,4 @@
-# Prueba de Auth
+# Unit test: Auth
 
 from app import gen_hash, check_hash
 

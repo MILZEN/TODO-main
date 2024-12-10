@@ -1,29 +1,40 @@
-_pycache_/
+# Byte-compiled / optimized / DLL files
+__pycache__/
 *.py[cod]
 *$py.class
 
-venv-TODO-LIST/
+# Virtual environment
+.env/
+.venv/
 venv/
-env/
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Credentials and environment files
 .env
+*.key
+*.pem
 
-instance/
-.webassess-cache
+# Database and local logs
+databases/
+*.sqlite3
+*.log
+*.pid
 
-*.db
-
-.vscode/
-.idea/
-
+# System files
 .DS_Store
 Thumbs.db
-
-*.log
-
-*.tmp
-variables.env
-secret.key
-
-git rm --cached .env
-git rm --cached secret.key
-git commit -m "Remove sensitive files from Git history"
+*.swp

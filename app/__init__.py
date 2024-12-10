@@ -1,22 +1,20 @@
+from dotenv import load_dotenv
 from flask import Flask
+from config import Config
 from flask_pymongo import PyMongo
 from authlib.integrations.flask_client import OAuth
-from dotenv import load_dotenv
-import os
-from config import Config  # Asegúrate de importar la clase Config
+from app.routes import auth, tasks, index_page  # Import routes
 
-load_dotenv()  # Cargar variables de entorno antes de usarlas
+load_dotenv()  # Load environment variables
 
-# Inicializar Flask y cargar la configuración
+# Init Flask and load config
 app = Flask(__name__)
-app.config.from_object(Config)  # Cargar configuración desde el archivo config.py
-print(f"Secret Key in app/__init__.py: {app.secret_key}")
-print(f"MONGO_URI: {app.config.get('MONGO_URI')}")  # Asegúrate de que la URI esté correcta
+app.config.from_object(Config)  # Load config from config.py
 
-# Inicializar MongoDB
+# Init MongoDB
 mongo = PyMongo(app)
 
-# Inicializar OAuth
+# Init and config OAuth
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
@@ -26,7 +24,6 @@ google = oauth.register(
     client_kwargs={'scope': 'openid profile email'}
 )
 
-from app.routes import auth, tasks, index_page  # Importar rutas
-app.register_blueprint(auth.bp)  # Registrar Blueprint para autenticación
-app.register_blueprint(tasks.bp)  # Registrar Blueprint para tareas
-app.register_blueprint(index_page.bp)  # Registrar Blueprint para index
+app.register_blueprint(auth.bp)  # BP for auth
+app.register_blueprint(tasks.bp)  # BP for tasks
+app.register_blueprint(index_page.bp)  # BP for index

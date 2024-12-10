@@ -3,8 +3,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class Config:
-    # Base de datos PostgreSQL
+    # PostgreSQL DB
     MYSQL_HOST = os.getenv('MYSQL_HOST', 'localhost')
     MYSQL_USER = os.getenv('MYSQL_USER', 'root')
     MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
@@ -16,8 +17,8 @@ class Config:
     GOOGLE_DISCOVERY_URL = os.getenv('GOOGLE_DISCOVERY_URL')
     PEOPLE_API_SCOPE = os.getenv('PEOPLE_API_SCOPE')
 
-    # URI de MongoDB
+    # MongoDB URI
     MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/todolist")
 
-    # Clave secreta para sesiones
+    # Secret key for sessions
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY")

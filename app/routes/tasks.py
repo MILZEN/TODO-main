@@ -1,16 +1,20 @@
+# Tasks management pages
+
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session
 from app import mongo
 from bson.objectid import ObjectId
 
 bp = Blueprint('tasks', __name__)
 
+
 @bp.route('/home/<username>')
 def home(username):
     # Obtain username in session
     if 'username' in session:
         username = session['username']
-    tasks = mongo.db.tasks.find({"username": username}) # Tasks that user created
+    tasks = mongo.db.tasks.find({"username": username})  # Tasks that user created
     return render_template('home.html', tasks=tasks, username=username)
+
 
 @bp.route('/add/<username>', methods=['POST'])
 def add_task(username):
@@ -28,7 +32,8 @@ def add_task(username):
         })
 
     tasks = mongo.db.tasks.find({"username": username})
-    return render_template('home.html', tasks=tasks, username=username) # Render home again, will show the new task too
+    return render_template('home.html', tasks=tasks, username=username)  # Render home again, will show the new task too
+
 
 @bp.route('/edit/<id>', methods=['GET', 'POST'])
 def edit_task(id):
@@ -40,6 +45,7 @@ def edit_task(id):
         return redirect(url_for('tasks.home', username=task['username']))
     return render_template('edit.html', task=task)
 
+
 @bp.route('/update-completion/<id>', methods=['POST'])
 def update_completion(id):
     data = request.get_json()
@@ -49,6 +55,7 @@ def update_completion(id):
         return jsonify({'success': True})
     else:
         return jsonify({'success': False})
+
 
 @bp.route('/delete/<id>')
 def delete_task(id):

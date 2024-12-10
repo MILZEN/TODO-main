@@ -5,18 +5,18 @@ from playwright.sync_api import sync_playwright
 
 def test_user_registration():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)  # Lanzar en modo headless
+        browser = p.chromium.launch(headless=True)  # Deploy in headless mode
         page = browser.new_page()
 
-        # Ir a la página de registro
+        # Go to register page
         page.goto("http://localhost:5000/register")
 
-        # Completar el formulario de registro
+        # Fill the register form
         page.fill("input[name='username']", "testuser")
         page.fill("input[name='password']", "password")
         page.click("button[type='submit']")
 
-        # Verificar redirección a la página de login
-        assert "User Login" in page.title()  # Verificar que el título es "Login"
+        # Verify redirection to login page
+        assert "User Login" in page.title()
 
         browser.close()

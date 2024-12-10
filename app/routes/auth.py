@@ -1,15 +1,13 @@
+# Auth routes for proyect
+
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from authlib.integrations.flask_client import OAuth
-from app import mongo, google
+from app import google
 from psycopg2 import Error
 import secrets
 from app.utils import create_connection, gen_hash, check_hash
-#from dotenv import load_dotenv
-#import os
-
-#load_dotenv()
 
 bp = Blueprint('auth', __name__)
+
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -21,9 +19,9 @@ def register():
         first_name = request.form['first_name']
         last_name = request.form['last_name']
 
-        hashed_pwd = gen_hash(password) # Hash password
-        
-        connection = create_connection() # DB connection
+        hashed_pwd = gen_hash(password)  # Hash password
+
+        connection = create_connection()  # DB connection
 
         # Push user login data into DB
         if connection is not None:
@@ -45,6 +43,7 @@ def register():
             flash('Unable to connect to database', 'danger')
 
     return render_template('register.html')
+
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -81,9 +80,9 @@ def login():
 
     return render_template('login.html')
 
-@bp.route('/login/google') # Login using Google OAuth
+
+@bp.route('/login/google')  # Login using Google OAuth
 def login_google():
-    #print(f"Secret Key in auth.py: {os.getenv("FLASK_SECRET_KEY")}")
     # Generate a random nonce
     nonce = secrets.token_urlsafe(16)
     session['nonce'] = nonce  # Save nonce in session
@@ -92,6 +91,7 @@ def login_google():
     redirect_uri = url_for('auth.auth_callback', _external=True)
     print(f"Redirect URI: {redirect_uri}")  # Verify generated URL
     return google.authorize_redirect(redirect_uri, nonce=nonce)
+
 
 @bp.route('/login/callback')
 def auth_callback():
@@ -107,7 +107,7 @@ def auth_callback():
         user = google.parse_id_token(token, nonce=nonce)
         if user is None:
             raise ValueError("ID token is None")
-        
+
         print("User profile:", user)  # Print user profile
 
     except Exception as e:
@@ -125,7 +125,7 @@ def auth_callback():
     if result:
         username = result[0]
     else:
-        # If user doesn't exist, create 
+        # If user doesn't exist, create
         username = user['given_name']  # Use the Google given name
         hashed_pwd = gen_hash('defaultpassword')  # Temp password
 
@@ -144,6 +144,7 @@ def auth_callback():
 
     # Redirect user to home page with username
     return redirect(url_for('tasks.home', username=username))
+
 
 # Ruta de logout
 @bp.route('/logout')
