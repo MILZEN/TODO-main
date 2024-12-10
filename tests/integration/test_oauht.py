@@ -8,8 +8,8 @@ def test_google_login(client, monkeypatch):
     def mock_redirect(*args, **kwargs):
         return "Mocked OAuth Redirect"
     
-    # Reemplazar la ruta de redirección de Google con la función mock
-    monkeypatch.setattr(app.view_functions['login_google'], '__wrapped__', mock_redirect)
+    # Reemplazar la función de la vista directamente
+    monkeypatch.setattr(app.view_functions['login_google'], mock_redirect)
     
     # Login request
     response = client.get('/login/google')
