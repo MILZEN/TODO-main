@@ -20,7 +20,7 @@ google = oauth.register(
     client_kwargs={'scope': 'openid profile email'}
 )
 
-from app.routes import auth, tasks, idx  # Importar rutas
+from app.routes import auth, tasks, index  # Importar rutas
 app.register_blueprint(auth.bp)  # Registrar Blueprint para autenticación
 app.register_blueprint(tasks.bp)  # Registrar Blueprint para tareas
-app.register_blueprint(idx.bp)  # Registrar Blueprint para index
+app.register_blueprint(index.bp)  # Registrar Blueprint para index
