@@ -1,7 +1,9 @@
+/* Styles from Home Page, Add tasks form and Tasks list */
+
 /* General styles */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #6CA2AC; /* Color de fondo */
+    background-color: #6CA2AC; /* Main color */
     margin: 0;
     padding: 0;
     display: flex;
@@ -9,12 +11,58 @@ body {
     align-items: center;
     height: 100vh;
     color: #ffffff;
-    overflow: hidden; /* Evita el scroll de la página */
+    overflow: hidden; /* Avoid scroll */
+}
+
+/* Nav bar */
+.navbar {
+    height: 50px;
+    padding: 10px;
+    background-color: #507D80;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.navbar img {
+    overflow: hidden;
+    width: 55px;
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar button {
+    background-color: #6CA2AC;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    height: 100%;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+
+.navbar button:hover {
+    opacity: 0.8;
 }
 
 .container {
     width: 50%;
-    height: 90vh; /* Ajustamos la altura para que no ocupe todo el viewport */
+    height: 90vh; /* Set height to don't use all the viewport */
     margin: 0 auto;
     text-align: center;
     padding: 20px;
@@ -26,7 +74,7 @@ body {
 }
 
 header {
-    background-color: #507D80; /* Color más oscuro que el fondo */
+    background-color: #507D80; /* Darker main color */
     padding: 20px;
     border-radius: 15px 15px 0 0;
     text-align: center;
@@ -52,7 +100,7 @@ nav {
 
 form {
     margin-top: 20px;
-    flex-shrink: 0; /* Evita que el formulario se reduzca al hacer scroll */
+    flex-shrink: 0; /* Avoid form reduces when scrolling */
 }
 
 input[type="text"] {
@@ -66,7 +114,7 @@ input[type="text"] {
     margin-right: 10px;
 }
 
-/* Estilos para el selector de prioridad */
+/* Priority selector styles */
 select {
     padding: 10px;
     width: 30%;
@@ -104,9 +152,9 @@ ul {
     list-style-type: none;
     padding: 0;
     margin-top: 20px;
-    flex-grow: 1; /* El listado ocupará todo el espacio restante */
-    overflow-y: auto; /* Habilita el scroll en la lista de tareas */
-    border-top: 1px solid #ccc; /* Separador visual */
+    flex-grow: 1;/* Tasks list will use the remain space */
+    overflow-y: auto; /* Enable scroll in Tasks list */
+    border-top: 1px solid #ccc; /* Visual separator */
 }
 
 li {
@@ -138,38 +186,38 @@ li {
 }
 
 .task-item.priority-low .priority-bar {
-    background-color: #82AC6C; /* Verde suave */
+    background-color: #82AC6C; /* Soft green */
 }
 
 .task-item.priority-medium .priority-bar {
-    background-color: #FFB13D; /* Naranja */
+    background-color: #FFB13D; /* Orange */
 }
 
 .task-item.priority-high .priority-bar {
-    background-color: #E94D4A; /* Rojo */
+    background-color: #E94D4A; /* Red */
 }
 
 .task-item.completed .priority-bar {
-    background-color: #3E4F50; /* Color más oscuro */
+    background-color: #3E4F50; /* Darker color */
     transform: translateX(-100%);
     opacity: 0;
 }
 
 .task-item.completed {
-    background-color: #000a1a; /* Azul más oscuro y potente */
-    border: 2px solid #FFD700; /* Amarillo oro puro */
-    box-shadow: 0 0 0 4px transparent; /* Eliminar efecto de brillo expandido */
-    color: white; /* Cambiar el color de texto a blanco */
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Transiciones suaves */
+    background-color: #000a1a; /* Darker blue background */
+    border: 2px solid #FFD700; /* Gold yellow border */
+    box-shadow: 0 0 0 4px transparent;
+    color: white; /* Change text color to white */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
 
-    /* Apagar botones excepto eliminar */
-    pointer-events: none; /* Deshabilitar interacción en todos los elementos hijos */
-    opacity: 0.6; /* Reducir opacidad de los elementos secundarios */
+    /* Disable buttons */
+    pointer-events: none; /* Disable interaction with child elements */
+    opacity: 0.6; /* Reduce opacity */
 }
 
 .task-item.completed .delete-btn {
-    pointer-events: auto; /* Permitir interacción en el botón de eliminar */
-    opacity: 1; /* Mantener visibilidad completa del botón de eliminar */
+    pointer-events: auto; /* Allow interaction with delete button */
+    opacity: 1;
 }
 
 
@@ -180,7 +228,7 @@ li {
 
 /* Button styles */
 .check-btn {
-    background-color: #FFB13D; /* Amarillo */
+    background-color: #FFB13D; /* Second color */
     color: white;
     border: none;
     border-radius: 8px;
@@ -195,16 +243,16 @@ li {
 }
 
 .check-btn:disabled {
-    background-color: #cccccc; /* Deshabilitado */
+    background-color: #cccccc; /* Disabled */
     cursor: not-allowed;
 }
 
 .edit-btn {
-    background-color: #82AC6C; /* Botón edit */
+    background-color: #82AC6C; /* Edit button */
 }
 
 .delete-btn {
-    background-color: #E94D4A; /* Botón delete */
+    background-color: #E94D4A; /* Delete button */
 }
 
 button:hover {
@@ -229,7 +277,7 @@ ul::-webkit-scrollbar-track {
     background-color: #f1f1f1;
 }
 
-/* Estilos para el widget del calendario */
+/* Calendar widget styles */
 .calendar-widget {
     border: 1px solid #ddd;
     padding: 20px;
