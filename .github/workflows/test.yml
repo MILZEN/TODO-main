@@ -27,6 +27,11 @@ jobs:
         run: |
           python -m playwright install
 
+      - name: Start Flask server
+        run: |
+          nohup flask run --host=0.0.0.0 &  # Inicia el servidor en segundo plano
+          sleep 5  # Espera a que el servidor se inicie
+
       - name: Run All Tests (Unit, Integration, E2E)
         run: |
           pytest tests/ --disable-warnings
