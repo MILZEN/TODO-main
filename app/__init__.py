@@ -3,13 +3,15 @@ from flask_pymongo import PyMongo
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 import os
+from config import Config  # Asegúrate de importar la clase Config
 
-load_dotenv()  # Asegura que .env se carga antes de usar variables de entorno
+load_dotenv()  # Cargar variables de entorno antes de usarlas
 
-# Inicializar Flask y configuraciones
+# Inicializar Flask y cargar la configuración
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.config.from_object(Config)  # Cargar configuración desde el archivo config.py
 print(f"Secret Key in app/__init__.py: {app.secret_key}")
+print(f"MONGO_URI: {app.config.get('MONGO_URI')}")  # Asegúrate de que la URI esté correcta
 
 # Inicializar MongoDB
 mongo = PyMongo(app)
