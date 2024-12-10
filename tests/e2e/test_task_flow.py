@@ -1,54 +1,71 @@
-# Prueba de task
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+# e2e test: Task flow
+
+from playwright.sync_api import sync_playwright
 import time
-import pytest
-from webdriver_manager.chrome import ChromeDriverManager
 
-@pytest.fixture(scope="module")
-def driver():
-    driver = webdriver.Chrome(ChromeDriverManager().install())
-    yield driver
-    driver.quit()
+def test_register_and_create_task():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        
+        # Registro de usuario
+        page.goto("http://localhost:5000/register")
+        page.fill("input[name='username']", "testuser")
+        page.fill("input[name='email']", "testuser@example.com")
+        page.fill("input[name='password']", "testpassword")
+        page.fill("input[name='first_name']", "Test")
+        page.fill("input[name='last_name']", "User")
+        page.click("button[type='submit']")
+        page.wait_for_url("http://localhost:5000/")  # Esperar redirección a la home page
+        
+        # Crear tarea (esperar que el input de tarea esté disponible)
+        page.fill("input[name='title']", "Test Task")
+        page.fill("select[name='priority']", "High")
+        page.click("button[type='submit']")
+        
+        # Esperar un poco para la creación de la tarea
+        page.wait_for_selector("ul#task-list li")  # Espera hasta que se cargue la lista de tareas
+        
+        # Verificar tarea creada
+        assert "Test Task" in page.content()
 
-def test_register_and_create_task(driver):
-    # Paso 1: Registrar usuario
-    driver.get("http://localhost:5000/register")
-    driver.find_element(By.NAME, "username").send_keys("testuser")
-    driver.find_element(By.NAME, "email").send_keys("testuser@example.com")
-    driver.find_element(By.NAME, "password").send_keys("testpassword")
-    driver.find_element(By.NAME, "first_name").send_keys("Test")
-    driver.find_element(By.NAME, "last_name").send_keys("User")
-    driver.find_element(By.XPATH, "//button[@type='submit']").click()
-    time.sleep(2)  # Esperar redirección
+        browser.close()
 
-    # Paso 2: Crear tarea
-    driver.find_element(By.XPATH, "//button[contains(text(), 'Add Task')]").click()
-    driver.find_element(By.NAME, "title").send_keys("Test Task")
-    driver.find_element(By.NAME, "priority").send_keys("High")
-    driver.find_element(By.XPATH, "//button[@type='submit']").click()
-    time.sleep(2)  # Esperar creación
+def test_edit_and_delete_task():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
 
-    # Verificar tarea creada
-    assert "Test Task" in driver.page_source
+        # Iniciar sesión para obtener la URL de home con el username del usuario
+        page.goto("http://localhost:5000/login")
+        page.fill("input[name='email']", "testuser@example.com")  # Usar un correo válido
+        page.fill("input[name='password']", "testpassword")
+        page.click("button[type='submit']")
+        page.wait_for_load_state("load")  # Esperar a que la página se cargue correctamente
 
-def test_edit_and_delete_task(driver):
-    # Paso 1: Editar tarea
-    driver.get("http://localhost:5000/home/testuser")
-    task = driver.find_element(By.XPATH, "//div[contains(text(), 'Test Task')]")
-    task.click()
-    driver.find_element(By.XPATH, "//button[contains(text(), 'Edit')]").click()
-    driver.find_element(By.NAME, "title").clear()
-    driver.find_element(By.NAME, "title").send_keys("Updated Task")
-    driver.find_element(By.XPATH, "//button[@type='submit']").click()
-    time.sleep(2)  # Esperar actualización
+        # Esperar que la página home esté lista
+        page.wait_for_selector("h1")  # Ajusta el selector según lo que esté en tu página de inicio
 
-    # Verificar actualización
-    assert "Updated Task" in driver.page_source
+        # Acceder a la página del usuario en home
+        username = "testuser"  # Este debe coincidir con el nombre de usuario después del login
+        page.goto(f"http://localhost:5000/home/{username}")
 
-    # Paso 2: Eliminar tarea
-    driver.find_element(By.XPATH, "//button[contains(text(), 'Delete')]").click()
-    time.sleep(2)  # Esperar eliminación
+        # Editar tarea
+        task = page.locator("text=Test Task")
+        task.click()
+        page.click("button:has-text('Edit')")
+        page.fill("input[name='title']", "Updated Task")
+        page.click("button[type='submit']")
+        time.sleep(2)  # Esperar actualización
 
-    # Verificar que la tarea fue eliminada
-    assert "Updated Task" not in driver.page_source
+        # Verificar tarea actualizada
+        assert "Updated Task" in page.content()
+
+        # Eliminar tarea
+        page.click("button:has-text('Delete')")
+        time.sleep(2)  # Esperar eliminación
+
+        # Verificar tarea eliminada
+        assert "Updated Task" not in page.content()
+
+        browser.close()
