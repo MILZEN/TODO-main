@@ -1,14 +1,17 @@
 # Unit test: Tasks
 
 def test_add_task(client, mock_db, mocker):
-    # Simulating DB insertion with mock
+    # Simulando la inserción en la DB con mock
     mock_db.tasks.insert_one.return_value = None
     
-    # POST request
+    # Datos esperados para la inserción
+    task_data = {"title": "Task 1", "priority": "High", "username": "test_user", "completed": False}
+    
+    # Solicitud POST
     response = client.post('/add/test_user', data={"title": "Task 1", "priority": "High"})
     
-    # Verifying expecting answer
+    # Verificando que la respuesta tenga el código de estado 200
     assert response.status_code == 200
     
-    # Verifying the function insert_one has been called correctly
-    mock_db.tasks.insert_one.assert_called_once_with({"title": "Task 1", "priority": "High"})
+    # Verificando que la función insert_one fue llamada correctamente con los datos esperados
+    mock_db.tasks.insert_one.assert_called_once_with(task_data)
