@@ -26,13 +26,13 @@ jobs:
     - name: Run unit tests
       id: unit-tests
       run: |
-        pytest tests/Unit/ || echo "Unit tests failed, continuing"
+        pytest tests/unit/ || echo "Unit tests failed, continuing"
       continue-on-error: true  # Conitnue even if unit tests fail
 
     - name: Run integration tests
       id: integration-tests
       run: |
-        pytest tests/Integration/ || echo "Integration tests failed, continuing"
+        pytest tests/integration/ || echo "Integration tests failed, continuing"
       continue-on-error: true  # Continue even if integration tests fail
 
     - name: Run e2e tests
