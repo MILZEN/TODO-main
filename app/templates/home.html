@@ -47,8 +47,8 @@
                 <button class="check-btn" onclick="markCompleted(this, '{{ task._id }}')" {{ task.completed and 'disabled' }}>
                     ✓
                 </button>
-                <a href="{{ url_for('edit_task', id=task._id) }}"><button class="edit-btn">Edit</button></a>
-                <a href="{{ url_for('delete_task', id=task._id) }}"><button class="delete-btn">Delete</button></a>
+                <a href="{{ url_for('tasks.edit_task', id=task._id) }}"><button class="edit-btn">Edit</button></a>
+                <a href="{{ url_for('tasks.delete_task', id=task._id) }}"><button class="delete-btn">Delete</button></a>
             </li>            
             {% endfor %}
         </ul>
