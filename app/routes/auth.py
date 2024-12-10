@@ -4,6 +4,10 @@ from app import mongo, google
 from psycopg2 import Error
 import secrets
 from app.utils import create_connection, gen_hash, check_hash
+#from dotenv import load_dotenv
+#import os
+
+#load_dotenv()
 
 bp = Blueprint('auth', __name__)
 
@@ -79,6 +83,7 @@ def login():
 
 @bp.route('/login/google') # Login using Google OAuth
 def login_google():
+    #print(f"Secret Key in auth.py: {os.getenv("FLASK_SECRET_KEY")}")
     # Generate a random nonce
     nonce = secrets.token_urlsafe(16)
     session['nonce'] = nonce  # Save nonce in session

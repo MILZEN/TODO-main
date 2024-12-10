@@ -20,4 +20,4 @@ class Config:
     MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/todolist")
 
     # Clave secreta para sesiones
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
