@@ -3,7 +3,7 @@ from authlib.integrations.flask_client import OAuth
 from app import mongo, google
 from psycopg2 import Error
 import secrets
-from utils import create_connection, gen_hash, check_hash  # Importar desde utils.py
+from app.utils import create_connection, gen_hash, check_hash
 
 bp = Blueprint('auth', __name__)
 
