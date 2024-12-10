@@ -1,7 +1,18 @@
+# e2e test: Auth flow 
+
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
 def test_user_registration():
-    driver = webdriver.Chrome()
+    # Configuration to use Chrome in headless mode
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Execute without interface
+    chrome_options.add_argument("--no-sandbox")  # Avoid sandbox issues
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Fix memory Issues
+
+    # Init in headless mode
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
     driver.get("http://localhost:5000/register")
     driver.find_element("name", "username").send_keys("testuser")
     driver.find_element("name", "password").send_keys("password")

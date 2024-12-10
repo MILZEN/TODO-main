@@ -1,17 +1,27 @@
+# e2e test: Task flow
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 import pytest
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
 @pytest.fixture(scope="module")
 def driver():
-    driver = webdriver.Chrome(ChromeDriverManager().install())
+    # Configuration to use Chrome in headless mode
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Execute without interface
+    chrome_options.add_argument("--no-sandbox")  # Avoid sandbox issues
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Fix memory issues
+
+    # Init in headless mode
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
     yield driver
     driver.quit()
 
 def test_register_and_create_task(driver):
-    # Step1 New user
+    # Step 1 New user
     driver.get("http://localhost:5000/register")
     driver.find_element(By.NAME, "username").send_keys("testuser")
     driver.find_element(By.NAME, "email").send_keys("testuser@example.com")
@@ -21,7 +31,7 @@ def test_register_and_create_task(driver):
     driver.find_element(By.XPATH, "//button[@type='submit']").click()
     time.sleep(2)  # Wait redirection
 
-    # Step2 Create task
+    # Step2 New task
     driver.find_element(By.XPATH, "//button[contains(text(), 'Add Task')]").click()
     driver.find_element(By.NAME, "title").send_keys("Test Task")
     driver.find_element(By.NAME, "priority").send_keys("High")
@@ -47,7 +57,7 @@ def test_edit_and_delete_task(driver):
 
     # Step2 Delete task
     driver.find_element(By.XPATH, "//button[contains(text(), 'Delete')]").click()
-    time.sleep(2)  # Esperar eliminación
+    time.sleep(2)  # Wait delete
 
-    # Verify delete
+    # Verify deleted task
     assert "Updated Task" not in driver.page_source
