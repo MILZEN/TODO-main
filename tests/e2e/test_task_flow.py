@@ -16,7 +16,7 @@ def driver():
     chrome_options.add_argument("--disable-dev-shm-usage")  # Fix memory issues
 
     # Init in headless mode
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
     yield driver
     driver.quit()
 
