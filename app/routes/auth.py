@@ -31,7 +31,7 @@ def register():
                 """
                 cursor.execute(query, (username, email, hashed_pwd, first_name, last_name))
                 connection.commit()
-                return redirect(url_for('login'))
+                return redirect(url_for('auth.login'))
             except Error as e:
                 flash(f'Sign in error: {e}', 'danger')
             finally:
@@ -107,7 +107,7 @@ def auth_callback():
 
     except Exception as e:
         flash(f"Error obtaining user profile: {e}", "danger")
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
 
     # Database connection
     connection = create_connection()
@@ -138,10 +138,10 @@ def auth_callback():
     session['username'] = username
 
     # Redirect user to home page with username
-    return redirect(url_for('home', username=username))
+    return redirect(url_for('tasks.home', username=username))
 
 # Ruta de logout
 @bp.route('/logout')
 def logout():
     session.pop('username', None)  # Delete username of session
-    return redirect(url_for('index'))
+    return redirect(url_for('index_page.index'))
