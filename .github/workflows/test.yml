@@ -19,23 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.12
-
-    - name: Install PostgreSQL
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y postgresql postgresql-contrib
-        sudo systemctl start postgresql
-        sudo -u postgres psql -c "CREATE USER test_user WITH PASSWORD 'test_password';"
-        sudo -u postgres psql -c "CREATE DATABASE test_db OWNER test_user;"
-        sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE test_db TO test_user;"
-
-    - name: Install MongoDB
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y mongodb
-        sudo systemctl start mongodb
-        mongo --eval "use test_todolist"
+        python-version: 3.12 # Python version
 
     - name: Install dependencies
       run: |
@@ -43,8 +27,5 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run Tests
-      env:
-        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
-        MONGO_URI: mongodb://localhost:27017/test_todolist
       run: |
         pytest --disable-warnings
