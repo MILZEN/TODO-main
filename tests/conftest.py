@@ -1,5 +1,5 @@
 # Conftest
-
+ 
 import pytest
 from unittest.mock import MagicMock
 
@@ -19,8 +19,6 @@ def client(app):
     # Return a test client to make HTTP requests
     return app.test_client()
 
-# Conftest.py
-
 @pytest.fixture
 def mock_db(mocker):
     # Mocking MongoDB connection
@@ -31,7 +29,6 @@ def mock_db(mocker):
     mocker.patch('app.mongo.db', mock_db)
     
     return mock_db
-
 
 @pytest.fixture
 def mock_postgres_db(mocker):
@@ -46,4 +43,4 @@ def db(app, mock_db, mock_postgres_db):
     from app import mongo, db as postgres_db
     mongo.db = mock_db  # Using MongoDB mock
     postgres_db = mock_postgres_db  # Using PostgreSQL mock
-    return mock_db  # Return any necessary mock
+    return mock_db  # Return MongoDB mock for testing
