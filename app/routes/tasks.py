@@ -55,5 +55,5 @@ def delete_task(id):
     task = mongo.db.tasks.find_one({"_id": ObjectId(id)})
     if task:
         mongo.db.tasks.delete_one({'_id': ObjectId(id)})
-        return redirect(url_for('home', username=task['username']))
-    return redirect(url_for('home', username='default'))
+        return redirect(url_for('tasks.home', username=task['username']))
+    return redirect(url_for('tasks.home', username='default'))
