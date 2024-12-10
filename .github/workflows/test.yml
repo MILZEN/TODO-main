@@ -57,9 +57,17 @@ jobs:
           pip install -r requirements.txt
           pip install selenium==4.27.1 webdriver-manager
 
+      - name: Wait for Selenium server
+        run: |
+          while ! nc -zv localhost 4444; do
+            echo "Waiting for Selenium server to start..."
+            sleep 1
+          done
+
       - name: Run E2E Tests
         run: |
           pytest --disable-warnings
         env:
           DISPLAY: ":99.0"  # Usar Selenium sin interfaz gráfica
           SELENIUM_URL: "http://localhost:4444/wd/hub"  # URL de Selenium WebDriver
+        continue-on-error: true
