@@ -1,7 +1,6 @@
 # Auth routes for proyect
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from app import google
 from psycopg2 import Error
 import secrets
 from app.utils import create_connection, gen_hash, check_hash
@@ -83,6 +82,7 @@ def login():
 
 @bp.route('/login/google')  # Login using Google OAuth
 def login_google():
+    from app import google
     # Generate a random nonce
     nonce = secrets.token_urlsafe(16)
     session['nonce'] = nonce  # Save nonce in session
