@@ -5,6 +5,7 @@ from config import Config
 
 # Inicializar Flask y configuraciones
 app = Flask(__name__)
+app.secret_key = Config.SECRET_KEY
 app.config.from_object(Config)
 
 # Inicializar MongoDB

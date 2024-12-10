@@ -61,7 +61,7 @@ def login():
                 if result:
                     stored_hash = result[0]
                     if check_hash(password, stored_hash):
-                        return redirect(url_for('home', username=result[1]))
+                        return redirect(url_for('tasks.home', username=result[1]))
                     else:
                         flash('Wrong Username or Password', 'danger')
                 else:
