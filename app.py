@@ -42,7 +42,7 @@ else:
 
 # Flask and OAuth init
 app = Flask(__name__) # Init Flask
-app.secret_key = 'tas^kedpas!sword?'  # Flash messages
+app.secret_key = os.getenv('FLASK_SECRET_KEY')  # Flash messages
 app.logger.setLevel(logging.DEBUG)
 
 app.logger.debug(f"GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
