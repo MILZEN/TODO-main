@@ -34,22 +34,15 @@ A web application to manage tasks, built with **Flask**, **PostgreSQL**, and **M
 
 ---
 
-## Google OAuth Setup
-
-To set up Google OAuth credentials:
-   1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-   2. Create a new project or select an existing one.
-   3. Navigate to **APIS & Services** > **Library**.
-   4. Search for **Google People API** and enable it.
-   5. Click Create Credentials and select OAuth 2.0 Client IDs.
-   6. Configure the consent screen and add `http://localhost:5000` (for development) and your deployed app URL as authorized redirect URIs.
-   7. Save the credentials and copy the Client ID and Client Secret into your .env file.
-
-Refer to the [official Google documentation](https://developers.google.com/people/?hl=es_419) for more details.
-
----
-
 ## Notes
 
 * **PostgreSQL** is used for user data.
 * **MongoDB** is used for managing tasks (CRUD operations)
+
+---
+
+## Additional Resources
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [MongoDB Atlas](https://www.mongodb.com/atlas/database)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [Google OAuth 2.0](https://developers.google.com/identity/protocols/oauth2)
