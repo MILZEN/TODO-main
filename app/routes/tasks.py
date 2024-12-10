@@ -37,7 +37,7 @@ def edit_task(id):
         new_title = request.form.get('title')
         new_priority = request.form.get('priority')
         mongo.db.tasks.update_one({'_id': ObjectId(id)}, {'$set': {'title': new_title, 'priority': new_priority}})
-        return redirect(url_for('home', username=task['username']))
+        return redirect(url_for('tasks.home', username=task['username']))
     return render_template('edit.html', task=task)
 
 @bp.route('/update-completion/<id>', methods=['POST'])

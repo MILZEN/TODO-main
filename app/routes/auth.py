@@ -89,7 +89,7 @@ def login_google():
     session['nonce'] = nonce  # Save nonce in session
 
     # Redirect Google for auth
-    redirect_uri = url_for('auth_callback', _external=True)
+    redirect_uri = url_for('auth.auth_callback', _external=True)
     print(f"Redirect URI: {redirect_uri}")  # Verify generated URL
     return google.authorize_redirect(redirect_uri, nonce=nonce)
 
