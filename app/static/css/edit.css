@@ -1,7 +1,9 @@
+/* Styles from edit task page */
+
 /* General styles */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #6CA2AC; /* Color de fondo */
+    background-color: #6CA2AC; /* Main color */
     margin: 0;
     padding: 0;
     display: flex;
@@ -9,12 +11,12 @@ body {
     align-items: center;
     height: 100vh;
     color: #ffffff;
-    overflow: hidden; /* Evita el scroll de la página */
+    overflow: hidden; /* Avoid scroll */
 }
 
 .container {
     width: 50%;
-    height: auto; /* Ajustamos la altura para que no ocupe todo el viewport */
+    height: auto; /* Set height to don't use all the viewport */
     margin: 0 auto;
     text-align: center;
     padding: 20px;
@@ -26,7 +28,7 @@ body {
 }
 
 header {
-    background-color: #507D80; /* Color más oscuro que el fondo */
+    background-color: #507D80; /* Darker main color */
     padding: 20px;
     border-radius: 15px 15px 0 0;
     text-align: center;
@@ -89,10 +91,10 @@ select option:hover {
     background-color: transparent; /* Evitar que el fondo cambie */
 }
 
-/* Estilo de enfoque para el selector */
+/* Selector focus style */
 select:focus {
-    border-color: #FFB13D; /* Color de borde al hacer focus */
-    box-shadow: 0 0 5px rgba(255, 177, 61, 0.5); /* Sombra sutil al hacer focus */
+    border-color: #FFB13D; /* Border color to focus */
+    box-shadow: 0 0 5px rgba(255, 177, 61, 0.5); /* Focus shadow */
 }
 
 button {
@@ -112,7 +114,7 @@ button {
 
 /* Button styles */
 .edit-btn {
-    background-color: #82AC6C; /* Botón edit */
+    background-color: #82AC6C; /* Edit button */
 }
 
 button:hover {

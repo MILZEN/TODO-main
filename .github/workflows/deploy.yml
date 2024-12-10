@@ -10,23 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Paso 1: Clonar el repositorio
+      # Clone Repository
       - uses: actions/checkout@v3
 
-      # Paso 2: Configurar Python
+      # Configure Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'  # Ajusta según la versión que uses.
+          python-version: '3.12'  # Python Version
 
-      # Paso 3: Instalar dependencias
+      # Install dependencies
       - name: Install dependencies
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
 
-      # Paso 4: Desplegar a Render (solo en rama `main`)
+      # Deploy on Render (only in main branch)
       - name: Deploy to Render
         if: github.ref == 'refs/heads/main'
         env:

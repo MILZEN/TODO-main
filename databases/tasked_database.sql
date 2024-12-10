@@ -1,3 +1,5 @@
+/* SQL DB in PostgreSQL to store user login data */
+
 CREATE TABLE users (
     username VARCHAR(80) PRIMARY KEY,
     email VARCHAR(120) UNIQUE NOT NULL,

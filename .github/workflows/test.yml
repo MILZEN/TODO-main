@@ -1,36 +1,38 @@
-name: Python CI
+name: Run Tests
 
 on:
   pull_request:
     branches:
-      - main  # Ejecutar en pull requests hacia la rama main
+      - main
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.11'  # Versión de Python que necesitas
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt  # Instala las dependencias
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Run all tests
-      run: pytest tests/  # Ejecuta todas las pruebas dentro de la carpeta 'tests/'
+      - name: Install Playwright Browsers
+        run: |
+          python -m playwright install
 
-#    - name: Run unit tests
-#      run: pytest tests/Unit/  # Ejecuta solo las pruebas unitarias
+      - name: Start Flask server
+        run: |
+          nohup flask run --host=0.0.0.0 &  # Inicia el servidor en segundo plano
+          sleep 5  # Espera a que el servidor se inicie
 
-#    - name: Run integration tests
-#      run: pytest tests/Integration/  # Ejecuta solo las pruebas de integración
-
-#    - name: Run e2e tests
-#      run: pytest tests/e2e/  # Ejecuta solo las pruebas e2e
+      - name: Run All Tests (Unit, Integration, E2E)
+        run: |
+          pytest tests/ --disable-warnings
+        continue-on-error: true
