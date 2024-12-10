@@ -1,14 +1,15 @@
 # Integration test: OAuth
 
-from app import oauth
+from app import app
+from flask import url_for
 
 def test_google_login(client, monkeypatch):
     # Mocking the redirection function
-    def mock_authorize(*args, **kwargs):
+    def mock_redirect(*args, **kwargs):
         return "Mocked OAuth Redirect"
     
-    # Function in OAuth instance
-    monkeypatch.setattr(oauth, "authorize", mock_authorize)
+    # Reemplazar la ruta de redirección de Google con la función mock
+    monkeypatch.setattr(app.view_functions['login_google'], '__wrapped__', mock_redirect)
     
     # Login request
     response = client.get('/login/google')

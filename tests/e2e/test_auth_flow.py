@@ -16,6 +16,6 @@ def test_user_registration():
         page.click("button[type='submit']")
         
         # Verificar redirección a la página de login
-        assert "Login" in page.title()
+        assert "Login" in page.title()  # Verificar que el título es "Login"
         
         browser.close()

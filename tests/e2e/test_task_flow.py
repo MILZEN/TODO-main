@@ -19,7 +19,6 @@ def test_register_and_create_task():
         time.sleep(2)  # Esperar redirección
 
         # Crear tarea
-        page.click("button:has-text('Add Task')")
         page.fill("input[name='title']", "Test Task")
         page.fill("input[name='priority']", "High")
         page.click("button[type='submit']")
@@ -35,8 +34,18 @@ def test_edit_and_delete_task():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
+        # Iniciar sesión para obtener la URL de home con el username del usuario
+        page.goto("http://localhost:5000/login")
+        page.fill("input[name='email']", "testuser@example.com")  # Usar un correo válido
+        page.fill("input[name='password']", "testpassword")
+        page.click("button[type='submit']")
+        page.wait_for_load_state("load")  # Esperar a que la página se cargue correctamente
+
+        # Acceder a la página del usuario en home
+        username = "testuser"  # Este debe coincidir con el nombre de usuario después del login
+        page.goto(f"http://localhost:5000/home/{username}")
+        
         # Editar tarea
-        page.goto("http://localhost:5000/home/testuser")
         task = page.locator("text=Test Task")
         task.click()
         page.click("button:has-text('Edit')")
