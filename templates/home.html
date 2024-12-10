@@ -8,6 +8,16 @@
     <link rel="icon" href="{{ url_for('static', filename='img/icon.ico') }}">
 </head>
 <body>
+    <header>
+        <div class="navbar">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+            <div class="nav-buttons">
+                <a href="{{ url_for('login') }}"><button class="edit-btn">Login</button></a>
+                <a href="{{ url_for('register') }}"><button class="edit-btn">Sign in</button></a>
+            </div>
+        </div>
+    </header>
+    
     <div class="container">
         <header>
             <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">

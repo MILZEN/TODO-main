@@ -1,7 +1,9 @@
-/* Estilos generales */
+/* Overall styles */
+
+/* General styles */
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #6CA2AC; /* Fondo principal */
+    background-color: #6CA2AC; /* Main color */
     margin: 0;
     padding: 0;
     display: flex;
@@ -11,7 +13,7 @@ body {
     color: #ffffff;
 }
 
-/* Header y Navbar */
+/* Header and Navbar */
 header {
     position: fixed;
     width: 100%;
@@ -23,7 +25,7 @@ header {
     padding: 10px 0;
     border-radius: 0 0 15px 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    z-index: 10; /* Asegura que el header esté por encima del contenido */
+    z-index: 10; /* Header above contain */
 }
 
 .navbar {
@@ -71,12 +73,11 @@ header {
     opacity: 0.8;
 }
 
-/* Contenedor principal */
 .container {
-    margin-top: 150px; /* Ajustado para centrar el contenedor respecto al header */
+    margin-top: 150px;
     width: 60%;
-    padding: 30px; /* Aumentado el padding para mostrar más borde de fondo */
-    background-color: #ffffff; /* Fondo blanco */
+    padding: 30px;
+    background-color: #ffffff;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;

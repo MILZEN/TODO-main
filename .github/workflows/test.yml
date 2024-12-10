@@ -3,7 +3,7 @@ name: Python CI
 on:
   pull_request:
     branches:
-      - main  # Ejecutar en pull requests hacia la rama main
+      - main  # Execute Pull Ruquests to main branch
 
 jobs:
   test:
@@ -16,21 +16,31 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.11'  # Versión de Python que necesitas
+        python-version: '3.11'  # Python version
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt  # Instala las dependencias
 
-    - name: Run all tests
-      run: pytest tests/  # Ejecuta todas las pruebas dentro de la carpeta 'tests/'
+    - name: Run unit tests
+      id: unit-tests
+      run: |
+        pytest tests/unit/ || echo "Unit tests failed, continuing"
+      continue-on-error: true  # Conitnue even if unit tests fail
 
-#    - name: Run unit tests
-#      run: pytest tests/Unit/  # Ejecuta solo las pruebas unitarias
+    - name: Run integration tests
+      id: integration-tests
+      run: |
+        pytest tests/integration/ || echo "Integration tests failed, continuing"
+      continue-on-error: true  # Continue even if integration tests fail
 
-#    - name: Run integration tests
-#      run: pytest tests/Integration/  # Ejecuta solo las pruebas de integración
+    - name: Run e2e tests
+      id: e2e-tests
+      run: |
+        pytest tests/e2e/ || echo "E2E tests failed, continuing"
+      continue-on-error: true  # Continue even if e2e tests fail
 
-#    - name: Run e2e tests
-#      run: pytest tests/e2e/  # Ejecuta solo las pruebas e2e
+    - name: Check test results
+      if: ${{ steps.unit-tests.outcome == 'failure' || steps.integration-tests.outcome == 'failure' || steps.e2e-tests.outcome == 'failure' }}
+      run: exit 1
